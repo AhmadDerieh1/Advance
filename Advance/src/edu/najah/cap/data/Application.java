@@ -3,6 +3,8 @@ package edu.najah.cap.data;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.activity.UserActivityService;
+import edu.najah.cap.export.DataExporter;
+import edu.najah.cap.export.ExportFactory;
 import edu.najah.cap.iam.IUserService;
 import edu.najah.cap.iam.UserProfile;
 import edu.najah.cap.iam.UserService;
@@ -23,16 +25,25 @@ public class Application {
     private static final IUserService userService = new UserService();
     private static final IPostService postService = new PostService();
 
-
     public static void main(String[] args) {
         generateRandomData();
         Instant start = Instant.now();
         System.out.println("Application Started: " + start);
         //TODO Your application starts here. Do not Change the existing code
+        generateUser(1);
+        UserService userService1 = new UserService();
+        PostService postService1 = new PostService();
+        PaymentService paymentService1 = new PaymentService();
+        UserActivityService userActivityService1 = new UserActivityService();
 
+        System.out.println(userService1.getUser("user1").getEmail());
+        generatePost(1);
+        generatePayment(1);
+        generateActivity(1);
 
-
-
+        ExportFactory exportFactory = new ExportFactory(userService1, postService1,paymentService1, userActivityService1);
+        DataExporter exporter = exportFactory.createExport("PDF");
+        exporter.exportData("user2");
 
 
 
