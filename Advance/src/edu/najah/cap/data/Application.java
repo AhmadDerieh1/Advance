@@ -41,10 +41,11 @@ public class Application {
         generatePayment(1);
         generateActivity(1);
 
-        ExportFactory exportFactory = new ExportFactory(userService1, postService1,paymentService1, userActivityService1);
-        DataExporter exporter = exportFactory.createExport("PDF");
-        exporter.exportData("user2");
 
+            // Use the user object here
+            ExportFactory exportFactory = new ExportFactory(userService1, postService1, paymentService1, userActivityService1, getRandomUserType(8));
+            DataExporter exporter = exportFactory.createExport("PDF");
+            exporter.exportData("user2");
 
 
 

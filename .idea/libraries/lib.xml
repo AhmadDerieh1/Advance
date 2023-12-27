@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Advance/lib/maven-model-3.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/plexus-utils-2.0.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/maven-artifact-3.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/sisu-guice-2.9.4-no_aop.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/plexus-classworlds-2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/itextdoc-2.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/itextpdf-5.1.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/sisu-inject-bean-2.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/maven-plugin-api-3.0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/plexus-component-annotations-1.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/sisu-inject-plexus-2.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/commons-io-2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/Advance/lib/xmlworker-1.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
