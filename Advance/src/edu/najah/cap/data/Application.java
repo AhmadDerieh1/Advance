@@ -3,6 +3,10 @@ package edu.najah.cap.data;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.activity.UserActivityService;
+import edu.najah.cap.exceptions.BadRequestException;
+import edu.najah.cap.exceptions.NotFoundException;
+import edu.najah.cap.exceptions.SystemBusyException;
+import edu.najah.cap.exceptions.Util;
 import edu.najah.cap.export.DataExporter;
 import edu.najah.cap.export.ExportFactory;
 import edu.najah.cap.iam.IUserService;
@@ -17,6 +21,8 @@ import edu.najah.cap.posts.Post;
 import edu.najah.cap.posts.PostService;
 
 import java.time.Instant;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
 
 public class Application {
 
@@ -25,30 +31,30 @@ public class Application {
     private static final IUserService userService = new UserService();
     private static final IPostService postService = new PostService();
 
+    private static String loginUserName;
+
     public static void main(String[] args) {
         generateRandomData();
         Instant start = Instant.now();
         System.out.println("Application Started: " + start);
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter your username: ");
+        System.out.println("Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99");
+        String userName = scanner.nextLine();
+        setLoginUserName(userName);
         //TODO Your application starts here. Do not Change the existing code
-        generateUser(1);
-        UserService userService1 = new UserService();
-        PostService postService1 = new PostService();
-        PaymentService paymentService1 = new PaymentService();
-        UserActivityService userActivityService1 = new UserActivityService();
-
-        System.out.println(userService1.getUser("user1").getEmail());
-        generatePost(1);
-        generatePayment(1);
-        generateActivity(1);
 
 
-            // Use the user object here
-            ExportFactory exportFactory = new ExportFactory(userService1, postService1, paymentService1, userActivityService1, getRandomUserType(8));
+        // Use the user object here
+
+        try {
+            ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
-            exporter.exportData("user2");
-
-
-
+            exporter.exportData(getLoginUserName());
+        }catch (Exception e )
+        {
+            System.out.println(e.getMessage());
+        }
 
 
         //TODO Your application ends here. Do not Change the existing code
@@ -58,6 +64,7 @@ public class Application {
 
 
     private static void generateRandomData() {
+        Util.setSkipValidation(true);
         for (int i = 0; i < 100; i++) {
             generateUser(i);
             generatePost(i);
@@ -65,17 +72,32 @@ public class Application {
             generateActivity(i);
         }
         System.out.println("Data Generation Completed");
+        Util.setSkipValidation(false);
     }
+
 
     private static void generateActivity(int i) {
         for (int j = 0; j < 100; j++) {
+            try {
+                if(UserType.NEW_USER.equals(userService.getUser("user" + i).getUserType())) {
+                    continue;
+                }
+            } catch (Exception e) {
+                System.err.println("Error while generating activity for user" + i);
+            }
             userActivityService.addUserActivity(new UserActivity("user" + i, "activity" + i + "." + j, Instant.now().toString()));
         }
     }
 
     private static void generatePayment(int i) {
         for (int j = 0; j < 100; j++) {
-            paymentService.pay(new Transaction("user" + i, i * j, "description" + i + "." + j));
+            try {
+                if (userService.getUser("user" + i).getUserType() == UserType.PREMIUM_USER) {
+                    paymentService.pay(new Transaction("user" + i, i * j, "description" + i + "." + j));
+                }
+            } catch (Exception e) {
+                System.err.println("Error while generating post for user" + i);
+            }
         }
     }
 
@@ -113,5 +135,13 @@ public class Application {
         } else {
             return UserType.PREMIUM_USER;
         }
+    }
+
+    public static String getLoginUserName() {
+        return loginUserName;
+    }
+
+    private static void setLoginUserName(String loginUserName) {
+        Application.loginUserName = loginUserName;
     }
 }
