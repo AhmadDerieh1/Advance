@@ -21,7 +21,13 @@ import edu.najah.cap.posts.Post;
 import edu.najah.cap.posts.PostService;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 public class Application {
@@ -37,12 +43,47 @@ public class Application {
         generateRandomData();
         Instant start = Instant.now();
         System.out.println("Application Started: " + start);
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter your username: ");
-        System.out.println("Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99");
-        String userName = scanner.nextLine();
-        setLoginUserName(userName);
         //TODO Your application starts here. Do not Change the existing code
+/*I tried to print data: user Activity Data, Payment Information, Post Data, IAM Data 
+for the first five users and found that all types of users have the same four permissions*/
+
+//If you want to call the data base from anywhere Map<UserType, List<MergeObject>> db = FakeDataBase.DB;
+
+
+//Polymorfizm 
+//D
+    DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
+    FakeDataBase DB =new FakeDataBase(dataFacade);
+    Scanner scanner = new Scanner(System.in);
+    System.out.println("! Welcome to our system !");
+        System.out.print("Please Enter your username ");
+        System.out.println("'Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99'");
+
+        String userName = scanner.nextLine();
+       UserData userDataSingleton = UserData.getInstance();
+       //objData_Current user
+       MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(userName,DB);
+        if (DB.isUserInDatabase(userName)) {
+        System.out.println("Username " + userName + " is found in the database.");
+    } else {
+        System.out.println("Username " + userName + " is not found in the database.");
+    } 
+       if (userMergeObject != null) {
+System.out.println("________________________");
+System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName()); 
+System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName()); 
+System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
+System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
+System.out.println("________________________");
+  } else {
+        System.out.println("User not found.");
+    } 
+      
+    
+    
+       
+       
+        setLoginUserName(userName);
 
 
         // Use the user object here
@@ -57,12 +98,14 @@ public class Application {
         }
 
 
+//Delete
+//Dr. Comment"delete similar to export, no access to the database, you communicate via the provided interface"
+
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);
     }
-
-
+   
     private static void generateRandomData() {
         Util.setSkipValidation(true);
         for (int i = 0; i < 100; i++) {

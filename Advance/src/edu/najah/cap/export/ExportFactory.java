@@ -13,7 +13,7 @@ public class ExportFactory {
     public DataExporter createExport(String type) {
         if (type.equals("PDF")) {
             // You can now use userType here if needed
-            return new DirectExporter();
+           // return new DirectExporter();
         }
 
         throw new IllegalArgumentException("Unsupported export type: " + type);
