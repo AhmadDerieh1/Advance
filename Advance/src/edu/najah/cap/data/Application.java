@@ -52,33 +52,33 @@ for the first five users and found that all types of users have the same four pe
 
 //Polymorfizm 
 //D
-    DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
-    FakeDataBase DB =new FakeDataBase(dataFacade);
+    //DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
+   // FakeDataBase DB =new FakeDataBase(dataFacade);
     Scanner scanner = new Scanner(System.in);
     System.out.println("! Welcome to our system !");
         System.out.print("Please Enter your username ");
         System.out.println("'Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99'");
 
         String userName = scanner.nextLine();
-       UserData userDataSingleton = UserData.getInstance();
+      // UserData userDataSingleton = UserData.getInstance();
        //objData_Current user
-       MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(userName,DB);
-        if (DB.isUserInDatabase(userName)) {
-        System.out.println("Username " + userName + " is found in the database.");
-    } else {
-        System.out.println("Username " + userName + " is not found in the database.");
-    } 
-       if (userMergeObject != null) {
-System.out.println("________________________");
-System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName()); 
-System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName()); 
-System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
-System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
-System.out.println("________________________");
-  } else {
-        System.out.println("User not found.");
-    } 
-      
+       // MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(userName,DB);
+//        if (DB.isUserInDatabase(userName)) {
+//        System.out.println("Username " + userName + " is found in the database.");
+//    } else {
+//        System.out.println("Username " + userName + " is not found in the database.");
+//    }
+//       if (userMergeObject != null) {
+//System.out.println("________________________");
+//System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
+//System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName());
+//System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
+//System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
+//System.out.println("________________________");
+//  } else {
+//        System.out.println("User not found.");
+//    }
+//
     
     
        
@@ -92,6 +92,8 @@ System.out.println("________________________");
             ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
             exporter.exportData(getLoginUserName());
+            DataExporter zip = exportFactory.createExport("ZIP");
+            zip.exportData(getLoginUserName());
         }catch (Exception e )
         {
             System.out.println(e.getMessage());
