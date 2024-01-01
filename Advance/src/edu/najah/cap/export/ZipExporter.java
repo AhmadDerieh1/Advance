@@ -10,6 +10,8 @@ import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 
+import edu.najah.cap.iam.UserProfile;
+import edu.najah.cap.iam.UserService;
 import edu.najah.cap.payment.PaymentService;
 import edu.najah.cap.payment.Transaction;
 import edu.najah.cap.posts.Post;
@@ -36,14 +38,18 @@ public class ZipExporter implements DataExporter {
             if (!userExists(userName)) {
                 throw new NotFoundException("User does not exist: " + userName);
             }
-
+            UserService userService = new UserService();
+            UserProfile userProfiles = userService.getUser(userName);
             // Generate PDF content for each type
+            byte[] userDataPdf = generateUserDataPdf(userName,userProfiles);
             byte[] postsPdf = generatePostsPdf(userName);
             byte[] activitiesPdf = generateActivitiesPdf(userName);
             byte[] paymentsPdf = generatePaymentsPdf(userName);
 
             // Zip the files
             try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream("exported_data.zip"))) {
+                addPdfToZip(zipOutputStream, "userData_" + userName.replaceAll("\\s+", "_") + ".pdf",userDataPdf);
+
                 // Add Posts PDF to the ZIP
                 addPdfToZip(zipOutputStream, "Posts_" + userName.replaceAll("\\s+", "_") + ".pdf", postsPdf);
 
@@ -67,6 +73,42 @@ public class ZipExporter implements DataExporter {
         // Implement logic to check if the user exists in your system
         // Return true if the user exists, false otherwise
         return true; // Replace with actual logic
+    }
+    private byte[] generateUserDataPdf(String username, UserProfile userProfile) throws SystemBusyException, NotFoundException, BadRequestException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        document = new Document();
+
+        try {
+            PdfWriter.getInstance(document, byteArrayOutputStream);
+            document.open();
+
+            // Implement the logic to export data to PDF
+            // For example, add user data to the document
+            // Add User Profile Information
+            document.add(new Paragraph("UserName: " + userProfile.getUserName()));
+            document.add(new Paragraph("First Name:" + userProfile.getFirstName()));
+            document.add(new Paragraph("Last Name:" + userProfile.getLastName()));
+            document.add(new Paragraph("Phone number:" + userProfile.getPhoneNumber()));
+            document.add(new Paragraph("Email: " + userProfile.getEmail()));
+            document.add(new Paragraph("Role:" + userProfile.getRole()));
+            document.add(new Paragraph("Department:" + userProfile.getDepartment()));
+            document.add(new Paragraph("Organization:" + userProfile.getOrganization()));
+            document.add(new Paragraph("Country:" + userProfile.getCountry()));
+            document.add(new Paragraph("City:" + userProfile.getCity()));
+            document.add(new Paragraph("Street:" + userProfile.getStreet()));
+            document.add(new Paragraph("Post code:" + userProfile.getPostalCode()));
+            document.add(new Paragraph("Building:" + userProfile.getBuilding()));
+            document.add(new Paragraph("User type:" + userProfile.getUserType()));            // Add more user-specific data as needed
+
+        } catch (Exception e) {
+            e.printStackTrace();  // Use a logger instead of printStackTrace
+        } finally {
+            if (document != null && document.isOpen()) {
+                document.close();
+            }
+        }
+
+        return byteArrayOutputStream.toByteArray();
     }
 
     private byte[] generatePostsPdf(String username) throws SystemBusyException, NotFoundException, BadRequestException {
