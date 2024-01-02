@@ -1,4 +1,4 @@
-package edu.najah.cap.data;
+package edu.najah.cap.data.Delete;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;

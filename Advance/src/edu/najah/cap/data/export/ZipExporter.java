@@ -40,7 +40,7 @@ public class ZipExporter implements DataExporter {
             if (!userExists(userName)) {
                 throw new NotFoundException("User does not exist: " + userName);
             }
-       
+
             if (userType.equals(UserType.NEW_USER)) {
                 userDataPdf = creatUserDataPdf(document,user);
                 postsPdf = creatPostsPdf(document,user);
@@ -54,22 +54,24 @@ public class ZipExporter implements DataExporter {
                 activitiesPdf = creatActivitiesPdf(document,user);
                 paymentsPdf = creatPaymentsPdf(document,user);
             }
-      
-           // Zip the files
-        
-            try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream("exported_data.zip"))) {
-                addPdfToZip(zipOutputStream, "userData_" + userName.replaceAll("\\s+", "_") + ".pdf",userDataPdf);
+      // Zip the files
+      try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream("exported_data.zip"))) {
+        // Add userDataPdf to the ZIP
+        addPdfToZip(zipOutputStream, "userData_" + userName.replaceAll("\\s+", "_") + ".pdf", userDataPdf);
 
-                // Add Posts PDF to the ZIP
-                addPdfToZip(zipOutputStream, "Posts_" + userName.replaceAll("\\s+", "_") + ".pdf", postsPdf);
+        // Add Posts PDF to the ZIP
+        addPdfToZip(zipOutputStream, "Posts_" + userName.replaceAll("\\s+", "_") + ".pdf", postsPdf);
 
-                // Add Activities PDF to the ZIP
-                addPdfToZip(zipOutputStream, "Activities_" + userName.replaceAll("\\s+", "_") + ".pdf", activitiesPdf);
+        // Add Activities PDF to the ZIP if the user is REGULAR or PREMIUM
+        if (userType.equals(UserType.REGULAR_USER) || userType.equals(UserType.PREMIUM_USER)) {
+            addPdfToZip(zipOutputStream, "Activities_" + userName.replaceAll("\\s+", "_") + ".pdf", activitiesPdf);
+        }
 
-                // Add Payments PDF to the ZIP
-                addPdfToZip(zipOutputStream, "Payments_" + userName.replaceAll("\\s+", "_") + ".pdf", paymentsPdf);
-
-            } catch (IOException e) {
+        // Add Payments PDF to the ZIP if the user is PREMIUM
+        if (userType.equals(UserType.PREMIUM_USER)) {
+            addPdfToZip(zipOutputStream, "Payments_" + userName.replaceAll("\\s+", "_") + ".pdf", paymentsPdf);
+        } 
+    }catch (IOException e) {
                 e.printStackTrace();  // Handle the exception appropriately (e.g., log it)
             }
         } catch (NotFoundException | SystemBusyException | BadRequestException e) {

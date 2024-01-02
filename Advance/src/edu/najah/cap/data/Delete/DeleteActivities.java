@@ -1,4 +1,4 @@
-package edu.najah.cap.data;
+package edu.najah.cap.data.Delete;
 
 import java.util.ArrayList;
 import java.util.List;
