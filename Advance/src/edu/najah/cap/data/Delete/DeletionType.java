@@ -4,9 +4,3 @@ public interface DeletionType {
     void executeDeletion(String userName);
 
 }
-
-
-
-
-
-
