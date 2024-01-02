@@ -156,8 +156,8 @@ System.out.println("________________________");
             ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
             exporter.exportData(userMergeObject);
-           // DataExporter zip = exportFactory.createExport("ZIP");
-            //zip.exportData(getLoginUserName());
+            DataExporter zip = exportFactory.createExport("ZIP");
+            zip.exportData(userMergeObject);
         }catch (Exception e )
         {
             System.out.println(e.getMessage());
@@ -175,6 +175,12 @@ System.out.println("________________________");
         // Call the function to upload the file, the 'fileName' is how it will appear in Google Drive
         uploadFile("exported_data.zip", zipFile);
 */
+//Delete
+/*FakeDataBase fakeDB = new FakeDataBase(...);
+fakeDB.printAllUserData();
+DeletionActionFactory factory = new DeletionActionFactory(userActivityService,
+ paymentService, postService,userService);
+ */
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);

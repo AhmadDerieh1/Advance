@@ -25,6 +25,8 @@ public class DirectExporter implements DataExporter {
     {
         document = new Document();
     }
+    /* try (FileOutputStream fos = new FileOutputStream(fileName); 
+         PdfWriter writer = PdfWriter.getInstance(document, fos)) { */
 
     @Override
     public void exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
