@@ -14,7 +14,7 @@ public class RegularUserStrategy implements UserTypeStrategy {
     public RegularUserStrategy(IUserActivityService userActivityService) {
         this.userActivityService = userActivityService;
     }
-
+    //Fill the data into the marege object
     @Override
     public void collectUserData(MergeObject mergeObject, String userName) {
         try{

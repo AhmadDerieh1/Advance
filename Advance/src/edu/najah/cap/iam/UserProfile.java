@@ -15,7 +15,7 @@ public class UserProfile {
     private String street;
     private String postalCode;
     private String building;
-
+    
     private UserType userType;
 
     public UserProfile(String firstName, String lastName, String phoneNumber, String email, String userName, String password, String role, String department,

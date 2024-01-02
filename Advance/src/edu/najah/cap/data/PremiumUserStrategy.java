@@ -14,7 +14,7 @@ public class PremiumUserStrategy implements UserTypeStrategy {
         this.paymentService = paymentService;
         this.userActivityService = userActivityService;
     }
-
+    //Fill the data into the marege object
     @Override
     public void collectUserData(MergeObject mergeObject, String userName) {
         try{

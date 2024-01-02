@@ -1,17 +1,17 @@
 package edu.najah.cap.data;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 import edu.najah.cap.activity.UserActivity;
-import edu.najah.cap.activity.UserActivityService;
+
 import edu.najah.cap.iam.UserProfile;
-import edu.najah.cap.iam.UserService;
-import edu.najah.cap.iam.UserType;
-import edu.najah.cap.payment.PaymentService;
+
+
+
 import edu.najah.cap.payment.Transaction;
 import edu.najah.cap.posts.Post;
-import edu.najah.cap.posts.PostService;
+
 public class MergeObject {
     private UserProfile userProfile;
     private List<Post> posts;
@@ -29,9 +29,15 @@ public class MergeObject {
     public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
+    public List<Post> getPosts() {
+       return posts;
+    }
 
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
+    }
+    public List<Transaction> getTransactions() {
+        return transactions;
     }
 
     public void setUserActivities(List<UserActivity> userActivities) {

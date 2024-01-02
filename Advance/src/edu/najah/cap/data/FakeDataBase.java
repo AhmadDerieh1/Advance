@@ -90,11 +90,11 @@ public static MergeObject UserInDatabase(String userName) {
     }
 
    //Overriding of Database class
-     public void start() {
+     public void connect(){
         System.out.println("Connecting to FakeDatabase!!");
     }
     //Overriding of Database class
-    public void end() {
+    public void disconnect() {
         System.out.println("Disconnected from the FakeDatabase.");
     }
 }

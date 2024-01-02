@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "Advance/lib/**/*.jar",
+        "Advance/lib/jackson-core-2.16.1.jar"
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
+}

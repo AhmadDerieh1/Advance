@@ -3,12 +3,12 @@ package edu.najah.cap.data;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.activity.UserActivityService;
+import edu.najah.cap.data.export.DataExporter;
+import edu.najah.cap.data.export.ExportFactory;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 import edu.najah.cap.exceptions.Util;
-import edu.najah.cap.export.DataExporter;
-import edu.najah.cap.export.ExportFactory;
 import edu.najah.cap.iam.IUserService;
 import edu.najah.cap.iam.UserProfile;
 import edu.najah.cap.iam.UserService;
@@ -30,6 +30,27 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.GoogleCredentials;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
+import java.util.List;
+
 public class Application {
 
     private static final IUserActivityService userActivityService = new UserActivityService();
@@ -38,8 +59,45 @@ public class Application {
     private static final IPostService postService = new PostService();
 
     private static String loginUserName;
+/*    private static final String APPLICATION_NAME = "AdvanceUserDataFeature";
+    private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
+    private static final String TOKENS_DIRECTORY_PATH = "src/edu/najah/cap/resources/token";
+    private static final String CREDENTIALS_FILE_PATH = "src/edu/najah/cap/resources/client_secret.json";
 
-    public static void main(String[] args) {
+    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
+    private static GoogleCredentials getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
+        // Load client secrets.
+        InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
+        GoogleCredentials credentials = GoogleCredentials.fromStream(in).createScoped(SCOPES);
+
+        return credentials;
+    }
+    public static Drive getDriveService() throws IOException, GeneralSecurityException {
+        // Build a new authorized API client service.
+        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
+        GoogleCredentials credential = getCredentials(HTTP_TRANSPORT);
+
+        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpCredentialsAdapter(credential))
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+    public static void uploadFile(String fileName, java.io.File filePath) throws IOException, GeneralSecurityException {
+        Drive service = getDriveService();
+
+        File fileMetadata = new File();
+        fileMetadata.setName(fileName);
+
+        FileContent mediaContent = new FileContent("application/zip", filePath);
+
+        File file = service.files().create(fileMetadata, mediaContent)
+                .setFields("id")
+                .execute();
+
+        System.out.println("File ID: " + file.getId());
+    }
+*/
+
+    public static void main(String[] args) throws IOException, GeneralSecurityException {
         generateRandomData();
         Instant start = Instant.now();
         System.out.println("Application Started: " + start);
@@ -49,60 +107,74 @@ for the first five users and found that all types of users have the same four pe
 
 //If you want to call the data base from anywhere Map<UserType, List<MergeObject>> db = FakeDataBase.DB;
 
-
 //Polymorfizm 
 //D
-    //DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
-   // FakeDataBase DB =new FakeDataBase(dataFacade);
+    DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
+    FakeDataBase DB =new FakeDataBase(dataFacade);
     Scanner scanner = new Scanner(System.in);
     System.out.println("! Welcome to our system !");
         System.out.print("Please Enter your username ");
         System.out.println("'Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99'");
 
         String userName = scanner.nextLine();
-      // UserData userDataSingleton = UserData.getInstance();
-       //objData_Current user
-       // MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(userName,DB);
-//        if (DB.isUserInDatabase(userName)) {
-//        System.out.println("Username " + userName + " is found in the database.");
-//    } else {
-//        System.out.println("Username " + userName + " is not found in the database.");
-//    }
-//       if (userMergeObject != null) {
-//System.out.println("________________________");
-//System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
-//System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName());
-//System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
-//System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
-//System.out.println("________________________");
-//  } else {
-//        System.out.println("User not found.");
-//    }
-//
-    
-    
-       
-       
         setLoginUserName(userName);
 
+       UserData userDataSingleton = UserData.getInstance();
+
+       //objData_Current user
+
+       //userMergeObject = contains all the user data in the system according to his type
+        MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(getLoginUserName(),DB);
+
+ if (DB.isUserInDatabase(userMergeObject.getUserProfile().getUserName())) {
+        System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is found in the database.");
+   } else {
+        System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is not found in the database.");
+    }
+       if (userMergeObject != null) {
+System.out.println("________________________");
+System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
+System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName());
+System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
+System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
+System.out.println("________________________");
+  } else {
+        System.out.println("User not found.");
+    }
+
+    
+//System.out.println("print all data________________________print all data");
+
+//DB.printAllUserData();
+
+
+              
 
         // Use the user object here
 
         try {
             ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
-            exporter.exportData(getLoginUserName());
-            DataExporter zip = exportFactory.createExport("ZIP");
-            zip.exportData(getLoginUserName());
+            exporter.exportData(userMergeObject);
+           // DataExporter zip = exportFactory.createExport("ZIP");
+            //zip.exportData(getLoginUserName());
         }catch (Exception e )
         {
             System.out.println(e.getMessage());
         }
 
-
-//Delete
-//Dr. Comment"delete similar to export, no access to the database, you communicate via the provided interface"
-
+/*
+        java.io.File tokensDirectory = new java.io.File(TOKENS_DIRECTORY_PATH);
+        if (!tokensDirectory.exists()) {
+            tokensDirectory.mkdirs();
+        }*/
+        // Update with the path to your zip file
+        
+/*
+        java.io.File zipFile = new java.io.File("Advance/exported_data.zip");
+        // Call the function to upload the file, the 'fileName' is how it will appear in Google Drive
+        uploadFile("exported_data.zip", zipFile);
+*/
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);
@@ -190,3 +262,6 @@ for the first five users and found that all types of users have the same four pe
         Application.loginUserName = loginUserName;
     }
 }
+
+  
+
