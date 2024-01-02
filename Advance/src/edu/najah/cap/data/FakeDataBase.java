@@ -2,8 +2,12 @@ package edu.najah.cap.data;
 import edu.najah.cap.iam.UserType;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FakeDataBase implements Database{
+    private static final Logger LOGGER = Logger.getLogger(FakeDataBase.class.getName());
+
     private DataFacade dataFacade;
     //This to follow the put values in map & avoid Duplicate User name
     private Set<String> addedUserNames;
@@ -14,19 +18,26 @@ public class FakeDataBase implements Database{
         this.dataFacade = dataFacade;
         this.addedUserNames = new HashSet<>();
          DB = new HashMap<>();
-        initializeFakeData();
+        try {
+            initializeFakeData();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error initializing fake data", e);
+            // Handle or log the exception as needed
+        }
     }
 
     private void initializeFakeData() {
         for (int i = 0; i < 100; i++) {
-            String userName = "user" + i;
-            dataFacade.getMergedData(userName);
-            //|  Type   |  Obj  |
-            Map<UserType, MergeObject> mergeObjectUser = dataFacade.getMergeObjectMap();
-// mergeMap opration
-            mergeValues(DB, mergeObjectUser, addedUserNames);
-        }
-      //  printAllUserData();
+            try {
+                String userName = "user" + i;
+                dataFacade.getMergedData(userName);
+                Map<UserType, MergeObject> mergeObjectUser = dataFacade.getMergeObjectMap();
+                mergeValues(DB, mergeObjectUser, addedUserNames);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error processing user" + i, e);
+                // Handle or log the exception as needed
+            }
+        };
     }
 
     public boolean isUserInDatabase(String userName) {
@@ -58,22 +69,26 @@ public static MergeObject UserInDatabase(String userName) {
 
     public void mergeValues(Map<UserType, List<MergeObject>> targetMap,
      Map<UserType, MergeObject> sourceMap, Set<String> addedUserNames) {
+        LOGGER.info("Merging values into the database");
         for (Map.Entry<UserType, MergeObject> entry : sourceMap.entrySet()) {
-            UserType key = entry.getKey();
-            MergeObject value = entry.getValue();
-    
-            if (!addedUserNames.contains(value.getUserProfile().getUserName())) {
- 
-                addedUserNames.add(value.getUserProfile().getUserName());
-    
+            try {
+                UserType key = entry.getKey();
+                MergeObject value = entry.getValue();
 
-                if (targetMap.containsKey(key)) {
-                    targetMap.get(key).add(value);
-                } else {
-                    List<MergeObject> values = new ArrayList<>();
-                    values.add(value);
-                    targetMap.put(key, values);
+                if (!addedUserNames.contains(value.getUserProfile().getUserName())) {
+                    addedUserNames.add(value.getUserProfile().getUserName());
+
+                    if (targetMap.containsKey(key)) {
+                        targetMap.get(key).add(value);
+                    } else {
+                        List<MergeObject> values = new ArrayList<>();
+                        values.add(value);
+                        targetMap.put(key, values);
+                    }
                 }
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, "Error merging values", e);
+                // Handle or log the exception as needed
             }
         }
     }

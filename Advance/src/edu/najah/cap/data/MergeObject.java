@@ -1,7 +1,9 @@
 package edu.najah.cap.data;
+import java.util.logging.Level;
 
 
 import java.util.List;
+import java.util.logging.Logger;
 
 import edu.najah.cap.activity.UserActivity;
 
@@ -13,6 +15,8 @@ import edu.najah.cap.payment.Transaction;
 import edu.najah.cap.posts.Post;
 
 public class MergeObject {
+    private static final Logger LOGGER = Logger.getLogger(MergeObject.class.getName());
+
     private UserProfile userProfile;
     private List<Post> posts;
     private List<Transaction> transactions;
@@ -49,24 +53,31 @@ public class MergeObject {
 
    
     public void printData() {
-     
-    System.out.println("UserProfile: ");
-    System.out.println("  FirstName: " + userProfile.getFirstName());
-    System.out.println("  LastName: " + userProfile.getLastName());
-    System.out.println("  PhoneNumber: " + userProfile.getPhoneNumber());
-    System.out.println("  Email: " + userProfile.getEmail());
-    System.out.println("  UserName: " + userProfile.getUserName());
-    System.out.println("  Password: " + userProfile.getPassword());
-    System.out.println("  Role: " + userProfile.getRole());
-    System.out.println("  Department: " + userProfile.getDepartment());
-    System.out.println("  Organization: " + userProfile.getOrganization());
-    System.out.println("  Country: " + userProfile.getCountry());
-    System.out.println("  City: " + userProfile.getCity());
-    System.out.println("  Street: " + userProfile.getStreet());
-    System.out.println("  PostalCode: " + userProfile.getPostalCode());
-    System.out.println("  Building: " + userProfile.getBuilding());
-    System.out.println("  UserType: " + userProfile.getUserType());
-    
+        LOGGER.info("Starting to print data for MergeObject");
+        try {
+            System.out.println("UserProfile: ");
+            if (userProfile != null) {
+                System.out.println("UserProfile: ");
+                System.out.println("  FirstName: " + userProfile.getFirstName());
+                System.out.println("  LastName: " + userProfile.getLastName());
+                System.out.println("  PhoneNumber: " + userProfile.getPhoneNumber());
+                System.out.println("  Email: " + userProfile.getEmail());
+                System.out.println("  UserName: " + userProfile.getUserName());
+                System.out.println("  Password: " + userProfile.getPassword());
+                System.out.println("  Role: " + userProfile.getRole());
+                System.out.println("  Department: " + userProfile.getDepartment());
+                System.out.println("  Organization: " + userProfile.getOrganization());
+                System.out.println("  Country: " + userProfile.getCountry());
+                System.out.println("  City: " + userProfile.getCity());
+                System.out.println("  Street: " + userProfile.getStreet());
+                System.out.println("  PostalCode: " + userProfile.getPostalCode());
+                System.out.println("  Building: " + userProfile.getBuilding());
+                System.out.println("  UserType: " + userProfile.getUserType());
+            } else {
+                System.out.println("  No user profile data available.");
+            }
+
+
     System.out.println("--------------------------");
 
   
@@ -78,6 +89,9 @@ public class MergeObject {
         
         }
     }
+    else {
+        System.out.println("  No posts data available.");
+    }
 
   
     System.out.println("\nTransactions:");
@@ -87,6 +101,9 @@ public class MergeObject {
             System.out.println("  Amount: " + transaction.getAmount());
         }
     }
+    else {
+        System.out.println("  No transactions data available.");
+    }
 
 
     System.out.println("\nUser Activities:");
@@ -95,7 +112,15 @@ public class MergeObject {
             System.out.println("  Activity ID: " + userActivity.getId());
             System.out.println("  Activity Type: " + userActivity.getActivityType());
         }
+    }else {
+        System.out.println("  No user activities data available.");
     }
-}
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "An error occurred while printing data", e);
+            // Optionally, log the stack trace or handle the exception as required
+        }
+        LOGGER.info("Data printing completed for MergeObject");
+
+    }
 
 }
