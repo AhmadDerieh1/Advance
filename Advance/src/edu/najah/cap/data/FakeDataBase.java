@@ -14,18 +14,34 @@ public class FakeDataBase implements Database{
         this.dataFacade = dataFacade;
         this.addedUserNames = new HashSet<>();
          DB = new HashMap<>();
-        initializeFakeData();
+       
     }
 
-    private void initializeFakeData() {
-        for (int i = 0; i < 100; i++) {
-            String userName = "user" + i;
-            dataFacade.getMergedData(userName);
-            //|  Type   |  Obj  |
-            Map<UserType, MergeObject> mergeObjectUser = dataFacade.getMergeObjectMap();
-// mergeMap opration
-            mergeValues(DB, mergeObjectUser, addedUserNames);
+
+    public void initializeFakeData() {
+        if (dataFacade == null) {
+            System.out.println("Warning: dataFacade is null!");
+            return;
         }
+   
+        for (int i = 0; i < 100; i++) {
+            try {
+                String userName = "user" + i;
+                dataFacade.getMergedData(userName);
+                 //|  Type   |  Obj  |
+                Map<UserType, MergeObject> mergeObjectUser = dataFacade.getMergeObjectMap();
+                // mergeMap opration
+                mergeValues(DB, mergeObjectUser, addedUserNames);
+            } catch (Exception e) {
+                e.printStackTrace();  
+            }
+        }
+        
+        if (DB == null || DB.isEmpty()) {
+            System.out.println("DB is null or empty.");
+            return;
+        }
+   
       //  printAllUserData();
     }
 
@@ -79,14 +95,24 @@ public static MergeObject UserInDatabase(String userName) {
     }
 //To Print DB
     public void printAllUserData() {
-        for (Map.Entry<UserType, List<MergeObject>> entry : DB.entrySet()) {
-            System.out.println("Key: " + entry.getKey() + ", Value: ");
-            for (MergeObject mergeObject : entry.getValue()) {
-                System.out.println("User Profile: " + mergeObject.getUserProfile().getUserName());
-                //...
-            }
-               System.out.println("___________________");
+        if (DB == null || DB.isEmpty()) {
+            System.out.println("DB is null or empty.");
+            return;
+        } 
+   for (Map.Entry<UserType, List<MergeObject>> entry : DB.entrySet()) {
+        System.out.println("Key: " + entry.getKey() + ", Value: ");
+        List<MergeObject> mergeObjects = entry.getValue();
+        if (mergeObjects == null || mergeObjects.isEmpty()) {
+            System.out.println("MergeObject list is null or empty for key: " + entry.getKey());
+            continue;
         }
+        for (MergeObject mergeObject : mergeObjects) {
+            System.out.println("User Profile: " + mergeObject.getUserProfile().getUserName());
+            //...
+        }
+        System.out.println("___________________");
+        }
+   
     }
 
    //Overriding of Database class

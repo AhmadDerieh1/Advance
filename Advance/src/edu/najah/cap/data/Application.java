@@ -42,14 +42,14 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
-import java.util.List;
+
+
 
 public class Application {
 
@@ -67,14 +67,16 @@ public class Application {
         System.out.println("Application Started: " + start);
         //TODO Your application starts here. Do not Change the existing code
 
-
     DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
     FakeDataBase DB =new FakeDataBase(dataFacade);
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("! Welcome to our system !");
+    
+    try {
+        DB.initializeFakeData();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("! Welcome to our system !");
         System.out.print("Please Enter your username ");
         System.out.println("'Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99'");
-
+        //FakeDataBase.DB;
         String userName = scanner.nextLine();
         setLoginUserName(userName);
 
@@ -84,12 +86,20 @@ public class Application {
 
        //userMergeObject = contains all the user data in the system according to his type
         MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(getLoginUserName(),DB);
+           if (userMergeObject != null && userMergeObject.getUserProfile() != null) {
+            if (DB.isUserInDatabase(userMergeObject.getUserProfile().getUserName())) {
+                System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is found in the database.");
+        
+            } else {
+                System.out.println("Username " + getLoginUserName() + " is not found in the database.");
 
- if (DB.isUserInDatabase(userMergeObject.getUserProfile().getUserName())) {
-        System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is found in the database.");
-   } else {
-        System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is not found in the database.");
-    }
+            }
+        } else {
+        
+            System.out.println("User data could not be retrieved for username: " + getLoginUserName());
+        
+        }
+            
  if (userMergeObject != null) {
 System.out.println("________________________");
 System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
@@ -100,9 +110,7 @@ System.out.println("________________________");
   } else {
         System.out.println("User not found.");
     }
-
-
-        try {
+   try {
             ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
             exporter.exportData(userMergeObject);
@@ -112,6 +120,11 @@ System.out.println("________________________");
         {
             System.out.println(e.getMessage());
         }
+
+       // DB.printAllUserData();
+    } catch (Exception e) {
+
+    }
 
 
         //TODO Your application ends here. Do not Change the existing code
@@ -201,3 +214,4 @@ System.out.println("________________________");
         Application.loginUserName = loginUserName;
     }
 }
+

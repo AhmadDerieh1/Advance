@@ -26,14 +26,16 @@ public class DataFacadeImpl implements DataFacade {
     private final IPayment paymentService;
     private final IUserActivityService userActivityService;
     private final Map<UserType, MergeObject> mergeObjectMap= new HashMap<>();
-     private Map<UserType, UserTypeStrategy> strategyMap = new HashMap<>();
+    private Map<UserType, UserTypeStrategy> strategyMap = new HashMap<>();
+    public static final int MAX_ATTEMPTS = 5; 
+    public static final int RETRY_DELAY = 1000; 
 
     public DataFacadeImpl(IUserService userService, IPostService postService, IPayment paymentService, IUserActivityService userActivityService) {
         this.userService = userService;
         this.postService = postService;
         this.paymentService = paymentService;
         this.userActivityService = userActivityService;
-         initializeStrategyMap();
+        initializeStrategyMap();
     }
     private void initializeStrategyMap() {
         strategyMap.put(UserType.PREMIUM_USER, new PremiumUserStrategy(paymentService, userActivityService));
@@ -44,29 +46,53 @@ public class DataFacadeImpl implements DataFacade {
     @Override
     public MergeObject getMergedData(String userName) {
         MergeObject mergeObject = new MergeObject();
-        try {
+        boolean successful = false;
+        int attempts = 0;
+        while (!successful && attempts < MAX_ATTEMPTS) { 
+            try {
+          //  System.out.println("try userProfile Befor");
+            //System.out.println("try userProfile Befor "+userName);
             UserProfile userProfile = userService.getUser(userName);
+            if (userProfile == null) {
+                System.out.println("User profile for " + userName + " is null.");
+                System.out.println("userProfile=null !");
+                return null; 
+            }
             List<Post> posts = postService.getPosts(userName);
-    
-            if (userProfile != null) {
                 mergeObject.setUserProfile(userProfile);
                 mergeObject.setPosts(posts);
     
                 UserType userType = userProfile.getUserType();
                 UserTypeStrategy strategy = strategyMap.get(userType);
-                if (strategy != null) {
-                    strategy.collectUserData(mergeObject, userName);
+                if (strategy == null) {
+                    System.out.println("Strategy for user type " + userType + " is null.");
+                    return null; 
                 }
+                strategy.collectUserData(mergeObject, userName);
+                
                 mergeObjectMap.put(userType, mergeObject);
-            } else {
-                System.out.println("userProfile=null !");
-            }
-        } catch (NotFoundException | SystemBusyException | BadRequestException e) {
-           
-        }
-        return mergeObject;
-    }
+                successful = true;
+            } catch (SystemBusyException e) {
+                attempts++;
+                System.out.println("System is busy, retrying... (" + attempts + ")");
     
+                try {
+                    Thread.sleep(RETRY_DELAY); 
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt(); 
+                }
+        } catch (NotFoundException | BadRequestException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    if (!successful) {
+        System.out.println("Failed to get user profile after " + attempts + " attempts.");
+        return null;
+    }
+    return mergeObject;
+}
+
 @Override
 public Map<UserType, MergeObject> getMergeObjectMap() {
     return mergeObjectMap;
