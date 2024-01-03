@@ -25,7 +25,7 @@ public class DirectExporter implements DataExporter {
          PdfWriter writer = PdfWriter.getInstance(document, fos)) { */
 
     @Override
-    public void exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
+    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
         String userName = user.getUserProfile().getUserName();
         UserType userType = user.getUserProfile().getUserType();
         try {
@@ -48,5 +48,6 @@ public class DirectExporter implements DataExporter {
                 document.close();
             }
         }
+        return userName;
     }
 }

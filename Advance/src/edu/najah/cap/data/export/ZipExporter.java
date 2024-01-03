@@ -31,12 +31,13 @@ public class ZipExporter implements DataExporter {
 
 
     @Override
-    public void exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
+    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
             String userName=user.getUserProfile().getUserName();
             UserType userType=user.getUserProfile().getUserType();
             byte[] pdfContent = null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy_HHmmss");
             String timestamp = dateFormat.format(new Date());
+            String zipFileName = userName + "_" + timestamp + "_exported_data.zip";
 
         try {
             // Check if the user exists before exporting data
@@ -70,6 +71,7 @@ public class ZipExporter implements DataExporter {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "IOException in writing to export_log.txt", e);
         }
+        return zipFileName;
     }
 
 

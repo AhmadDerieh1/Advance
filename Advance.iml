@@ -11,5 +11,6 @@
     <orderEntry type="library" name="google.api.client" level="project" />
     <orderEntry type="library" name="google.apis.api.services.drive" level="project" />
     <orderEntry type="library" name="google.auth.library.oauth2.http" level="project" />
+    <orderEntry type="library" name="github.lbroudoux.elasticsearch.google.drive.river" level="project" />
   </component>
 </module>

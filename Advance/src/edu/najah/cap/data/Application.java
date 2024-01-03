@@ -69,7 +69,6 @@ public class Application {
 
     DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
     FakeDataBase DB =new FakeDataBase(dataFacade);
-    
     try {
         DB.initializeFakeData();
         Scanner scanner = new Scanner(System.in);
@@ -89,17 +88,17 @@ public class Application {
            if (userMergeObject != null && userMergeObject.getUserProfile() != null) {
             if (DB.isUserInDatabase(userMergeObject.getUserProfile().getUserName())) {
                 System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is found in the database.");
-        
+
             } else {
                 System.out.println("Username " + getLoginUserName() + " is not found in the database.");
 
             }
         } else {
-        
+
             System.out.println("User data could not be retrieved for username: " + getLoginUserName());
-        
+
         }
-            
+
  if (userMergeObject != null) {
 System.out.println("________________________");
 System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
@@ -110,28 +109,44 @@ System.out.println("________________________");
   } else {
         System.out.println("User not found.");
     }
-   try {
+        try {
             ExportFactory exportFactory = new ExportFactory();
             DataExporter exporter = exportFactory.createExport("PDF");
             exporter.exportData(userMergeObject);
             DataExporter zip = exportFactory.createExport("ZIP");
-            zip.exportData(userMergeObject);
+            String zipFileName = zip.exportData(userMergeObject);
+            if (zipFileName != null) {
+                GoogleDriveService googleDriveService = new GoogleDriveService();
+                googleDriveService.uploadFile(zipFileName);
+            } else {
+                System.out.println("Failed to export data.");
+            }
         }catch (Exception e )
         {
             System.out.println(e.getMessage());
+            // e.printStackTrace();
         }
 
-       // DB.printAllUserData();
+        // DB.printAllUserData();
     } catch (Exception e) {
 
     }
 
+        //GoogleDriveService googleDriveService = new GoogleDriveService();
+        //googleDriveService.uploadFile("path/to/your/exported_data.zip");
+//Delete
+/*
+
+DB.printAllUserData();
+DeletionActionFactory factory = new DeletionActionFactory(userActivityService,
+ paymentService, postService,userService);
+ DB.printAllUserData();*/
 
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);
     }
-   
+
     private static void generateRandomData() {
         Util.setSkipValidation(true);
         for (int i = 0; i < 100; i++) {

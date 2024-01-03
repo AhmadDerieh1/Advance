@@ -6,5 +6,5 @@ import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 
 public interface DataExporter {
-    void exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException;
+    String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException;
 }
