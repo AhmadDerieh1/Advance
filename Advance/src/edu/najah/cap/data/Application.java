@@ -59,56 +59,15 @@ public class Application {
     private static final IPostService postService = new PostService();
 
     private static String loginUserName;
-/*    private static final String APPLICATION_NAME = "AdvanceUserDataFeature";
-    private static final GsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "src/edu/najah/cap/resources/token";
-    private static final String CREDENTIALS_FILE_PATH = "src/edu/najah/cap/resources/client_secret.json";
 
-    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    private static GoogleCredentials getCredentials(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-        // Load client secrets.
-        InputStream in = new FileInputStream(CREDENTIALS_FILE_PATH);
-        GoogleCredentials credentials = GoogleCredentials.fromStream(in).createScoped(SCOPES);
-
-        return credentials;
-    }
-    public static Drive getDriveService() throws IOException, GeneralSecurityException {
-        // Build a new authorized API client service.
-        final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-        GoogleCredentials credential = getCredentials(HTTP_TRANSPORT);
-
-        return new Drive.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpCredentialsAdapter(credential))
-                .setApplicationName(APPLICATION_NAME)
-                .build();
-    }
-    public static void uploadFile(String fileName, java.io.File filePath) throws IOException, GeneralSecurityException {
-        Drive service = getDriveService();
-
-        File fileMetadata = new File();
-        fileMetadata.setName(fileName);
-
-        FileContent mediaContent = new FileContent("application/zip", filePath);
-
-        File file = service.files().create(fileMetadata, mediaContent)
-                .setFields("id")
-                .execute();
-
-        System.out.println("File ID: " + file.getId());
-    }
-*/
 
     public static void main(String[] args) throws IOException, GeneralSecurityException {
         generateRandomData();
         Instant start = Instant.now();
         System.out.println("Application Started: " + start);
         //TODO Your application starts here. Do not Change the existing code
-/*I tried to print data: user Activity Data, Payment Information, Post Data, IAM Data 
-for the first five users and found that all types of users have the same four permissions*/
 
-//If you want to call the data base from anywhere Map<UserType, List<MergeObject>> db = FakeDataBase.DB;
 
-//Polymorfizm 
-//D
     DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
     FakeDataBase DB =new FakeDataBase(dataFacade);
     Scanner scanner = new Scanner(System.in);
@@ -131,7 +90,7 @@ for the first five users and found that all types of users have the same four pe
    } else {
         System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is not found in the database.");
     }
-       if (userMergeObject != null) {
+ if (userMergeObject != null) {
 System.out.println("________________________");
 System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
 System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName());
@@ -142,15 +101,6 @@ System.out.println("________________________");
         System.out.println("User not found.");
     }
 
-    
-//System.out.println("print all data________________________print all data");
-
-//DB.printAllUserData();
-
-
-              
-
-        // Use the user object here
 
         try {
             ExportFactory exportFactory = new ExportFactory();
@@ -163,24 +113,7 @@ System.out.println("________________________");
             System.out.println(e.getMessage());
         }
 
-/*
-        java.io.File tokensDirectory = new java.io.File(TOKENS_DIRECTORY_PATH);
-        if (!tokensDirectory.exists()) {
-            tokensDirectory.mkdirs();
-        }*/
-        // Update with the path to your zip file
-        
-/*
-        java.io.File zipFile = new java.io.File("Advance/exported_data.zip");
-        // Call the function to upload the file, the 'fileName' is how it will appear in Google Drive
-        uploadFile("exported_data.zip", zipFile);
-*/
-//Delete
-/*FakeDataBase fakeDB = new FakeDataBase(...);
-fakeDB.printAllUserData();
-DeletionActionFactory factory = new DeletionActionFactory(userActivityService,
- paymentService, postService,userService);
- */
+
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);
@@ -268,6 +201,3 @@ DeletionActionFactory factory = new DeletionActionFactory(userActivityService,
         Application.loginUserName = loginUserName;
     }
 }
-
-  
-
