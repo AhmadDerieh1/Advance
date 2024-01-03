@@ -16,4 +16,10 @@ public class ExportPostsToPdf implements PrintDirectExporter {
             document.add(new Paragraph("Post Title: " + post.getTitle()));
         }
     }
+    @Override
+    public String getDataType() {
+        return "_Posts";
+    }
 }
+
+

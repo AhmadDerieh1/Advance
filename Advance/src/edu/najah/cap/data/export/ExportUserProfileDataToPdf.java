@@ -27,4 +27,9 @@ public class ExportUserProfileDataToPdf implements PrintDirectExporter {
         document.add(new Paragraph("Building: " + userProfile.getBuilding()));
         document.add(new Paragraph("User type: " + userProfile.getUserType()));
     }
+    @Override
+    public String getDataType() {
+        return "userData";
+    }
+ 
 }

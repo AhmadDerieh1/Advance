@@ -7,5 +7,5 @@ import edu.najah.cap.data.MergeObject;
 
 public interface PrintDirectExporter {
     void printPdf(Document document, MergeObject user) throws DocumentException;
+    String getDataType();
 }
-

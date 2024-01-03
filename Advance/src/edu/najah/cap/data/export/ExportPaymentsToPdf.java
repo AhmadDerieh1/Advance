@@ -16,5 +16,10 @@ public class ExportPaymentsToPdf implements PrintDirectExporter {
             document.add(new Paragraph("Payment Processed: " + transaction.getDescription()));
         }
     }
+    @Override
+    public String getDataType() {
+        return "Payments_";
+    }
 }
+
 

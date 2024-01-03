@@ -17,5 +17,9 @@ public class ExportActivitiesToPdf implements PrintDirectExporter {
   
         }
     }
+    @Override
+    public String getDataType() {
+        return "_Activities_";
+    }
 }
 
