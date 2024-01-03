@@ -1,25 +1,21 @@
 package edu.najah.cap.data.export;
-
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
-
 import com.itextpdf.text.pdf.PdfWriter;
-
 import edu.najah.cap.data.MergeObject;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
-
-
 import edu.najah.cap.iam.UserType;
-
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 
 public class DirectExporter implements DataExporter {
+    private static final Logger logger = Logger.getLogger(DirectExporter.class.getName());
     Document document;
     public  DirectExporter()
     {
@@ -43,9 +39,10 @@ public class DirectExporter implements DataExporter {
             for (PrintDirectExporter exporter : exporters) {
                 exporter.printPdf(document, user);
             }
+            logger.log(Level.INFO, "Data export completed for user: " + userName);
 
         } catch (DocumentException | IOException e) {
-            e.printStackTrace();  // Use a logger instead of printStackTrace
+            logger.log(Level.SEVERE, "Error during data export", e);
         } finally {
             if (document != null && document.isOpen()) {
                 document.close();

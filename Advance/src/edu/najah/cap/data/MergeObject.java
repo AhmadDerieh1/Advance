@@ -1,18 +1,14 @@
 package edu.najah.cap.data;
-
-
+import java.util.logging.Logger;
 import java.util.List;
-
 import edu.najah.cap.activity.UserActivity;
-
 import edu.najah.cap.iam.UserProfile;
-
-
-
 import edu.najah.cap.payment.Transaction;
 import edu.najah.cap.posts.Post;
 
 public class MergeObject {
+    private static final Logger logger = Logger.getLogger(MergeObject.class.getName());
+
     private UserProfile userProfile;
     private List<Post> posts;
     private List<Transaction> transactions;
@@ -49,53 +45,61 @@ public class MergeObject {
 
    
     public void printData() {
-     
-    System.out.println("UserProfile: ");
-    System.out.println("  FirstName: " + userProfile.getFirstName());
-    System.out.println("  LastName: " + userProfile.getLastName());
-    System.out.println("  PhoneNumber: " + userProfile.getPhoneNumber());
-    System.out.println("  Email: " + userProfile.getEmail());
-    System.out.println("  UserName: " + userProfile.getUserName());
-    System.out.println("  Password: " + userProfile.getPassword());
-    System.out.println("  Role: " + userProfile.getRole());
-    System.out.println("  Department: " + userProfile.getDepartment());
-    System.out.println("  Organization: " + userProfile.getOrganization());
-    System.out.println("  Country: " + userProfile.getCountry());
-    System.out.println("  City: " + userProfile.getCity());
-    System.out.println("  Street: " + userProfile.getStreet());
-    System.out.println("  PostalCode: " + userProfile.getPostalCode());
-    System.out.println("  Building: " + userProfile.getBuilding());
-    System.out.println("  UserType: " + userProfile.getUserType());
-    
-    System.out.println("--------------------------");
+        try {
+            logger.info("Printing data for UserProfile: " + userProfile.getUserName());
 
-  
-    System.out.println("\nPosts:");
-    if (posts != null) {
-        for (Post post : posts) {
-            System.out.println("  Post ID: " + post.getId());
-            System.out.println("  Title: " + post.getTitle());
-        
+            System.out.println("  FirstName: " + userProfile.getFirstName());
+            System.out.println("  LastName: " + userProfile.getLastName());
+            System.out.println("  PhoneNumber: " + userProfile.getPhoneNumber());
+            System.out.println("  Email: " + userProfile.getEmail());
+            System.out.println("  UserName: " + userProfile.getUserName());
+            System.out.println("  Password: " + userProfile.getPassword());
+            System.out.println("  Role: " + userProfile.getRole());
+            System.out.println("  Department: " + userProfile.getDepartment());
+            System.out.println("  Organization: " + userProfile.getOrganization());
+            System.out.println("  Country: " + userProfile.getCountry());
+            System.out.println("  City: " + userProfile.getCity());
+            System.out.println("  Street: " + userProfile.getStreet());
+            System.out.println("  PostalCode: " + userProfile.getPostalCode());
+            System.out.println("  Building: " + userProfile.getBuilding());
+            System.out.println("  UserType: " + userProfile.getUserType());
+            System.out.println("--------------------------");
+            System.out.println("\nPosts:");
+
+            // Print Posts
+            logger.info("Posts:");
+            if (posts != null) {
+                for (Post post : posts) {
+                    logger.info("  Post ID: " + post.getId());
+                    logger.info("  Title: " + post.getTitle());
+                }
+            }
+
+            // Print Transactions
+            logger.info("Transactions:");
+            if (transactions != null) {
+                for (Transaction transaction : transactions) {
+                    logger.info("  Transaction ID: " + transaction.getId());
+                    logger.info("  Amount: " + transaction.getAmount());
+                }
+            }
+
+            // Print User Activities
+            logger.info("User Activities:");
+            if (userActivities != null) {
+                for (UserActivity userActivity : userActivities) {
+                    logger.info("  Activity ID: " + userActivity.getId());
+                    logger.info("  Activity Type: " + userActivity.getActivityType());
+                }
+            }
+
+            // Log the completion of data printing
+            logger.info("Data printing completed for UserProfile: " + userProfile.getUserName());
+        } catch (Exception e) {
+            // Handle exceptions and log them
+            logger.warning("Exception occurred while printing data for UserProfile: " + userProfile.getUserName());
+            logger.warning(e.getMessage());
+            e.printStackTrace();
         }
     }
-
-  
-    System.out.println("\nTransactions:");
-    if (transactions != null) {
-        for (Transaction transaction : transactions) {
-            System.out.println("  Transaction ID: " + transaction.getId());
-            System.out.println("  Amount: " + transaction.getAmount());
-        }
-    }
-
-
-    System.out.println("\nUser Activities:");
-    if (userActivities != null) {
-        for (UserActivity userActivity : userActivities) {
-            System.out.println("  Activity ID: " + userActivity.getId());
-            System.out.println("  Activity Type: " + userActivity.getActivityType());
-        }
-    }
-}
-
 }

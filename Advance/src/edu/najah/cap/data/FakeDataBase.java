@@ -1,9 +1,10 @@
 package edu.najah.cap.data;
 import edu.najah.cap.iam.UserType;
-
+import java.util.logging.Logger;
 import java.util.*;
 
 public class FakeDataBase implements Database{
+    private static final Logger logger = Logger.getLogger(FakeDataBase.class.getName());
     private DataFacade dataFacade;
     //This to follow the put values in map & avoid Duplicate User name
     private Set<String> addedUserNames;
@@ -14,16 +15,16 @@ public class FakeDataBase implements Database{
         this.dataFacade = dataFacade;
         this.addedUserNames = new HashSet<>();
          DB = new HashMap<>();
-       
+
     }
 
 
     public void initializeFakeData() {
         if (dataFacade == null) {
-            System.out.println("Warning: dataFacade is null!");
+            logger.warning("dataFacade is null!");
             return;
         }
-   
+
         for (int i = 0; i < 100; i++) {
             try {
                 String userName = "user" + i;
@@ -33,15 +34,16 @@ public class FakeDataBase implements Database{
                 // mergeMap opration
                 mergeValues(DB, mergeObjectUser, addedUserNames);
             } catch (Exception e) {
-                e.printStackTrace();  
+                logger.warning("Exception occurred while initializing fake data.");
+                logger.warning(e.getMessage());
             }
         }
-        
+
         if (DB == null || DB.isEmpty()) {
-            System.out.println("DB is null or empty.");
+            logger.warning("DB is null or empty.");
             return;
         }
-   
+
       //  printAllUserData();
     }
 
@@ -70,18 +72,18 @@ public static MergeObject UserInDatabase(String userName) {
         }
         return null;
     }
-   
+
 
     public void mergeValues(Map<UserType, List<MergeObject>> targetMap,
      Map<UserType, MergeObject> sourceMap, Set<String> addedUserNames) {
         for (Map.Entry<UserType, MergeObject> entry : sourceMap.entrySet()) {
             UserType key = entry.getKey();
             MergeObject value = entry.getValue();
-    
+
             if (!addedUserNames.contains(value.getUserProfile().getUserName())) {
- 
+
                 addedUserNames.add(value.getUserProfile().getUserName());
-    
+
 
                 if (targetMap.containsKey(key)) {
                     targetMap.get(key).add(value);
@@ -98,30 +100,30 @@ public static MergeObject UserInDatabase(String userName) {
         if (DB == null || DB.isEmpty()) {
             System.out.println("DB is null or empty.");
             return;
-        } 
+        }
    for (Map.Entry<UserType, List<MergeObject>> entry : DB.entrySet()) {
         System.out.println("Key: " + entry.getKey() + ", Value: ");
         List<MergeObject> mergeObjects = entry.getValue();
         if (mergeObjects == null || mergeObjects.isEmpty()) {
-            System.out.println("MergeObject list is null or empty for key: " + entry.getKey());
+            logger.warning("MergeObject list is null or empty for key: " + entry.getKey());
             continue;
         }
         for (MergeObject mergeObject : mergeObjects) {
-            System.out.println("User Profile: " + mergeObject.getUserProfile().getUserName());
+            logger.info("User Profile: " + mergeObject.getUserProfile().getUserName());
             //...
         }
         System.out.println("___________________");
         }
-   
+
     }
 
    //Overriding of Database class
      public void connect(){
-        System.out.println("Connecting to FakeDatabase!!");
+         logger.info("Connecting to FakeDatabase!!");
     }
     //Overriding of Database class
     public void disconnect() {
-        System.out.println("Disconnected from the FakeDatabase.");
+        logger.info("Disconnected from the FakeDatabase.");
     }
 }
 

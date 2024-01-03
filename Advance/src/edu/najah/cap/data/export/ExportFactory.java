@@ -1,22 +1,24 @@
 package edu.najah.cap.data.export;
 
-import edu.najah.cap.activity.UserActivityService;
-import edu.najah.cap.iam.UserType;
-import edu.najah.cap.iam.UserService;
-import edu.najah.cap.payment.PaymentService;
-import edu.najah.cap.posts.PostService;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class ExportFactory {
 
-    // Updated constructor with UserType parameter
+    private static final Logger logger = Logger.getLogger(ExportFactory.class.getName());
 
     public DataExporter createExport(String type) {
-        if (type.equals("PDF")) {
-            // You can now use userType here if needed
-           return new DirectExporter();
-        }else if(type.equals("ZIP"))
-            return new ZipExporter();
+        logger.log(Level.INFO, "Creating data exporter of type: " + type);
 
-        throw new IllegalArgumentException("Unsupported export type: " + type);
+        if ("PDF".equals(type)) {
+            logger.log(Level.INFO, "PDF exporter selected");
+            return new DirectExporter();
+        } else if ("ZIP".equals(type)) {
+            logger.log(Level.INFO, "ZIP exporter selected");
+            return new ZipExporter();
+        } else {
+            logger.log(Level.SEVERE, "Unsupported export type: " + type);
+            throw new IllegalArgumentException("Unsupported export type: " + type);
+        }
     }
 }
