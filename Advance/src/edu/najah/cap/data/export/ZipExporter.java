@@ -11,9 +11,14 @@ import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 import edu.najah.cap.iam.UserType;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -29,6 +34,8 @@ public class ZipExporter implements DataExporter {
             String userName=user.getUserProfile().getUserName();
             UserType userType=user.getUserProfile().getUserType();
             byte[] pdfContent = null;
+            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy_HHmmss");
+            String timestamp = dateFormat.format(new Date());
           
         try {
             // Check if the user exists before exporting data
@@ -40,7 +47,8 @@ public class ZipExporter implements DataExporter {
       
         List<PrintDirectExporter> exporters = strategyCreator.createPrintStrategies();
 
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(userName + "exported_data.zip"))) {
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(userName + "_" + timestamp + "_exported_data.zip"))) {
+
             for (PrintDirectExporter dataAddedDocument : exporters) {
                     // dataAddedDocument : do add to document
                 pdfContent = createPdf(document, user, dataAddedDocument);
@@ -49,10 +57,16 @@ public class ZipExporter implements DataExporter {
             }
        
         }catch (IOException e) {
-                e.printStackTrace();  // Handle the exception appropriately (e.g., log it)
+                e.printStackTrace();  // Handle the exception appropriately ( log it)
             }
         } catch (SystemBusyException | NotFoundException | BadRequestException e) {
             // Handle exceptions or log them
+            e.printStackTrace();
+        }
+        //To log information about each export in a text file called export_log.txt
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("export_log.txt", true)))) {
+        out.println("Exported " + timestamp + " for user " + userName);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
