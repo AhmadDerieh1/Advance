@@ -1,4 +1,8 @@
 package edu.najah.cap.data.Delete;
+
+import edu.najah.cap.data.MergeObject;
+
 public interface Deletion {
-    void removeData(String userName);
+    boolean removeData(String userName, MergeObject mergeObject);
 }
+

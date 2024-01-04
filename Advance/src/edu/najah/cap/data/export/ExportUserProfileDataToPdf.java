@@ -1,9 +1,7 @@
 package edu.najah.cap.data.export;
 
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.io.IOException;
-import java.util.logging.FileHandler;
+
 import java.util.logging.Level;
 
 import com.itextpdf.text.Document;

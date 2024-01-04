@@ -10,10 +10,9 @@ import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 import edu.najah.cap.iam.UserType;
 
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;

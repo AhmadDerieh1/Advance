@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-import java.util.logging.FileHandler;
+
 import java.util.logging.Level;
 //Decoreter 1
 public class ZipExporter extends DataExporterDecorator{

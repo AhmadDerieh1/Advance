@@ -1,12 +1,10 @@
 package edu.najah.cap.data.export;
 
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+
 
 import edu.najah.cap.data.LoggerSetup;
 
-import java.io.IOException;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 public class ExportFactory {

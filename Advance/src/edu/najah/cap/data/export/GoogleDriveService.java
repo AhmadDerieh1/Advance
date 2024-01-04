@@ -13,22 +13,21 @@ import com.google.auth.oauth2.GoogleCredentials;
 
 import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
-import edu.najah.cap.data.UserData;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.FileHandler;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+
 
 public class GoogleDriveService extends DataExporterDecorator {
 
