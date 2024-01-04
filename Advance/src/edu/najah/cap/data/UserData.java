@@ -1,19 +1,29 @@
 package edu.najah.cap.data;
+import java.util.HashSet;
+import java.util.Set;
+
 import java.util.logging.Logger;
+
+
 
 //Singleton
 public class UserData implements Database {
-    private static final Logger logger = Logger.getLogger(UserData.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger();
+
+     //for delete
+     private Set<String> deletedUserNames = new HashSet<>();
+ 
 
     // connection is open for each user
     private static UserData instance = new UserData();
+
     //Overriding of Database class
     public void connect() {
-        System.out.println("Connecting to FakeDatabase!!");
+        System.out.println("Connecting!!");
     }
     //Overriding of Database class
     public  void disconnect() {
-        System.out.println("Disconnected from the FakeDatabase.");
+        System.out.println("Disconnected");
     }
 
     // implementation users the Singleton to ensure a single connection for each user
@@ -53,6 +63,16 @@ public class UserData implements Database {
             return null;
         }
     }
+    public void deleteUser(String userName) {
+       // FakeDataBase.deleteUser(userName);
+        deletedUserNames.add(userName);
+    }
+    //print(make new account?)
+//print(enter youre name)
+//input( )
+    public boolean canCreateUser(String userName) {
+        return !deletedUserNames.contains(userName);
+    }
+    
 }
-
 

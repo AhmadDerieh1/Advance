@@ -2,10 +2,11 @@ package edu.najah.cap.data.Delete;
 
 import java.util.logging.Logger;
 
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.iam.IUserService;
 
 public class DeleteUserData implements Deletion {
-    private static final Logger logger = Logger.getLogger(DeleteUserData.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IUserService userService;
 
     public DeleteUserData(IUserService userService) {

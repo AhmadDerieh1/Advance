@@ -3,12 +3,13 @@ package edu.najah.cap.data.Delete;
 import java.util.logging.Logger;
 
 import edu.najah.cap.activity.IUserActivityService;
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.iam.IUserService;
 import edu.najah.cap.payment.IPayment;
 import edu.najah.cap.posts.IPostService;
 
 public class DeletionActionFactory {
-    private static final Logger logger = Logger.getLogger(DeletionActionFactory.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IUserActivityService userActivityService;
     private IPayment paymentService;
     private IPostService postService;

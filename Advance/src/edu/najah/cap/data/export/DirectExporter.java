@@ -2,27 +2,32 @@ package edu.najah.cap.data.export;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfWriter;
+
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 import edu.najah.cap.iam.UserType;
+
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-
+//basic class
 public class DirectExporter implements DataExporter {
-    private static final Logger logger = Logger.getLogger(DirectExporter.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger(); 
+
     Document document;
     public  DirectExporter()
     {
         document = new Document();
     }
-    /* try (FileOutputStream fos = new FileOutputStream(fileName); 
-         PdfWriter writer = PdfWriter.getInstance(document, fos)) { */
+  
 
     @Override
     public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
@@ -51,3 +56,4 @@ public class DirectExporter implements DataExporter {
         return userName;
     }
 }
+

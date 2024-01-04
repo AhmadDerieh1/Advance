@@ -3,12 +3,13 @@ package edu.najah.cap.data.Delete;
 import java.util.logging.Logger;
 
 import edu.najah.cap.activity.IUserActivityService;
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.iam.IUserService;
 import edu.najah.cap.payment.IPayment;
 import edu.najah.cap.posts.IPostService;
 
 public class SoftDeletion implements DeletionType {
-    private static final Logger logger = Logger.getLogger(SoftDeletion.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IPayment paymentService;
     private IUserActivityService userActivityService;
     private IPostService postService;
@@ -27,8 +28,7 @@ public class SoftDeletion implements DeletionType {
         try {
             // Perform soft deletion actions by calling the factory method
             DeletionActionFactory factory = new DeletionActionFactory(userActivityService, paymentService, postService, userService);
-            Deletion deletionAction = factory.getAction("soft"); // Change "soft" to the appropriate action type
-
+            Deletion deletionAction = factory.getAction("soft"); 
             if (deletionAction != null) {
                 deletionAction.removeData(userName);
                 logger.info("Soft deletion completed for user: " + userName);

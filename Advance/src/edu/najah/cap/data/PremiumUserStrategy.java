@@ -1,5 +1,10 @@
 package edu.najah.cap.data;
+import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
@@ -9,7 +14,21 @@ import edu.najah.cap.payment.IPayment;
 public class PremiumUserStrategy implements UserTypeStrategy {
     private IPayment paymentService;
     private IUserActivityService userActivityService;
-    private static Logger logger = Logger.getLogger(PremiumUserStrategy.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger();
+
+
+static {
+    try {
+        FileHandler fileHandler = new FileHandler("output.log");
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(fileHandler);
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "An error occurred while configuring the file handler", e);
+    }
+}
+
 
     public PremiumUserStrategy(IPayment paymentService, IUserActivityService userActivityService) {
         this.paymentService = paymentService;

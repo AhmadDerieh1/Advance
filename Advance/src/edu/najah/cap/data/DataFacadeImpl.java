@@ -1,9 +1,13 @@
 package edu.najah.cap.data;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.exceptions.BadRequestException;
@@ -17,7 +21,20 @@ import edu.najah.cap.posts.IPostService;
 import edu.najah.cap.posts.Post;
 
 public class DataFacadeImpl implements DataFacade {
-    private static final Logger logger = Logger.getLogger(DataFacadeImpl.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger();
+
+static {
+    try {
+        FileHandler fileHandler = new FileHandler("output.log");
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(fileHandler);
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "An error occurred while configuring the file handler", e);
+    }
+}
+
     private final IUserService userService;
     private final IPostService postService;
     private final IPayment paymentService;

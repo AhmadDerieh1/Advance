@@ -3,6 +3,7 @@ package edu.najah.cap.data.Delete;
 import java.util.logging.Logger;
 
 import edu.najah.cap.activity.IUserActivityService;
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
@@ -10,11 +11,9 @@ import edu.najah.cap.iam.IUserService;
 import edu.najah.cap.payment.IPayment;
 import edu.najah.cap.posts.IPostService;
 
-import java.util.HashSet;
-import java.util.Set;
 
 public class HardDeletion implements DeletionType {
-    private static final Logger logger = Logger.getLogger(HardDeletion.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IPayment paymentService;
     private IUserActivityService userActivityService;
     private IPostService postService;

@@ -1,10 +1,29 @@
 package edu.najah.cap.data;
 import edu.najah.cap.iam.UserType;
+
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.io.IOException;
 import java.util.*;
 
 public class FakeDataBase implements Database{
-    private static final Logger logger = Logger.getLogger(FakeDataBase.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger();
+
+static {
+    try {
+        FileHandler fileHandler = new FileHandler("output.log");
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(fileHandler);
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "An error occurred while configuring the file handler", e);
+    }
+}
+
+
     private DataFacade dataFacade;
     //This to follow the put values in map & avoid Duplicate User name
     private Set<String> addedUserNames;
@@ -24,7 +43,7 @@ public class FakeDataBase implements Database{
             logger.warning("dataFacade is null!");
             return;
         }
-
+        
         for (int i = 0; i < 100; i++) {
             try {
                 String userName = "user" + i;
@@ -101,20 +120,45 @@ public static MergeObject UserInDatabase(String userName) {
             System.out.println("DB is null or empty.");
             return;
         }
-   for (Map.Entry<UserType, List<MergeObject>> entry : DB.entrySet()) {
-        System.out.println("Key: " + entry.getKey() + ", Value: ");
-        List<MergeObject> mergeObjects = entry.getValue();
-        if (mergeObjects == null || mergeObjects.isEmpty()) {
-            logger.warning("MergeObject list is null or empty for key: " + entry.getKey());
-            continue;
-        }
-        for (MergeObject mergeObject : mergeObjects) {
-            logger.info("User Profile: " + mergeObject.getUserProfile().getUserName());
-            //...
-        }
-        System.out.println("___________________");
-        }
+     System.out.println("----------------------------------------------------------------");
+        System.out.printf("|%-20s|%-20s|%-20s|%n", "New User", "Regular User ", "Premium User");
+    System.out.println("|--------------------|--------------------|--------------------|");
 
+    // Find the maximum size among the lists
+    int maxSize = 0;
+    for (List<MergeObject> mergeObjects : DB.values()) {
+        maxSize = Math.max(maxSize, mergeObjects.size());
+    }
+
+    // Print rows
+    for (int i = 0; i < maxSize; i++) {
+        System.out.print("|");
+
+        for (List<MergeObject> mergeObjects : DB.values()) {
+            if (i < mergeObjects.size()) {
+                String userName = mergeObjects.get(i).getUserProfile().getUserName();
+                System.out.printf("%-20s|", userName);
+            } else {
+                System.out.printf("%-20s|", "");
+            }
+        }
+        System.out.println();
+    }
+    
+    System.out.println(" ____________________________");
+    System.out.println("| User Type     | User Count |");
+    System.out.println("|---------------|------------|");
+
+    for (Map.Entry<UserType, List<MergeObject>> entry : DB.entrySet()) {
+        UserType userType = entry.getKey();
+        List<MergeObject> users = entry.getValue();
+        
+        if (users != null && !users.isEmpty()) {
+            String row = String.format("| %-13s | %-10d |", userType, users.size());
+            System.out.println(row);
+        }
+    }
+     System.out.println("-----------------------------");
     }
 
    //Overriding of Database class

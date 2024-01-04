@@ -1,5 +1,9 @@
 package edu.najah.cap.data;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.io.IOException;
 import java.util.List;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.iam.UserProfile;
@@ -7,7 +11,20 @@ import edu.najah.cap.payment.Transaction;
 import edu.najah.cap.posts.Post;
 
 public class MergeObject {
-    private static final Logger logger = Logger.getLogger(MergeObject.class.getName());
+            private static final Logger logger = LoggerSetup.getLogger();
+
+static {
+    try {
+        FileHandler fileHandler = new FileHandler("output.log");
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(fileHandler);
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "An error occurred while configuring the file handler", e);
+    }
+}
+
 
     private UserProfile userProfile;
     private List<Post> posts;
@@ -46,7 +63,6 @@ public class MergeObject {
    
     public void printData() {
         try {
-            logger.info("Printing data for UserProfile: " + userProfile.getUserName());
 
             System.out.println("  FirstName: " + userProfile.getFirstName());
             System.out.println("  LastName: " + userProfile.getLastName());
@@ -74,7 +90,7 @@ public class MergeObject {
                     logger.info("  Title: " + post.getTitle());
                 }
             }
-
+        
             // Print Transactions
             logger.info("Transactions:");
             if (transactions != null) {

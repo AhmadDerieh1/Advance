@@ -1,5 +1,9 @@
 package edu.najah.cap.data;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.io.IOException;
 import java.util.List;
 
 import edu.najah.cap.activity.IUserActivityService;
@@ -10,7 +14,20 @@ import edu.najah.cap.exceptions.SystemBusyException;
 
 public class RegularUserStrategy implements UserTypeStrategy {
     private IUserActivityService userActivityService;
-    private static final Logger logger = Logger.getLogger(RegularUserStrategy.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger();
+
+
+static {
+    try {
+        FileHandler fileHandler = new FileHandler("output.log");
+        SimpleFormatter formatter = new SimpleFormatter();
+        fileHandler.setFormatter(formatter);
+        logger.setUseParentHandlers(false);
+        logger.addHandler(fileHandler);
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "An error occurred while configuring the file handler", e);
+    }
+}
 
     public RegularUserStrategy(IUserActivityService userActivityService) {
         this.userActivityService = userActivityService;

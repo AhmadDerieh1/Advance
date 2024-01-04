@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.payment.IPayment;
 import edu.najah.cap.payment.Transaction;
 
 public class DeleteTransactions implements Deletion {
-    private static final Logger logger = Logger.getLogger(DeleteTransactions.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IPayment paymentService;
 
     public DeleteTransactions(IPayment paymentService) {

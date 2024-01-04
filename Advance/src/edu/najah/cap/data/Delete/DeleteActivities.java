@@ -6,13 +6,14 @@ import java.util.logging.Logger;
 
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.export.ExportPaymentsToPdf;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 
 public class DeleteActivities implements Deletion {
-    private static final Logger logger = Logger.getLogger(DeleteActivities.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IUserActivityService userActivityService;
 
     public DeleteActivities(IUserActivityService userActivityService) {

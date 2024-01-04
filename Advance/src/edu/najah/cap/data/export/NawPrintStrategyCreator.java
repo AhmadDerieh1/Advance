@@ -1,13 +1,22 @@
 package edu.najah.cap.data.export;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import edu.najah.cap.data.LoggerSetup;
+import edu.najah.cap.data.UserData;
+
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 public class NawPrintStrategyCreator implements PrintStrategyCreator {
 
-    private static final Logger logger = Logger.getLogger(NawPrintStrategyCreator.class.getName());
+     private static final Logger logger = LoggerSetup.getLogger(); 
+
+
 
     @Override
     public List<PrintDirectExporter> createPrintStrategies() {

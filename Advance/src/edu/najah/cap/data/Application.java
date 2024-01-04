@@ -3,6 +3,7 @@ package edu.najah.cap.data;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.activity.UserActivityService;
+import edu.najah.cap.data.Delete.DeletionActionFactory;
 import edu.najah.cap.data.export.DataExporter;
 import edu.najah.cap.data.export.ExportFactory;
 import edu.najah.cap.data.export.GoogleDriveService;
@@ -49,6 +50,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -70,79 +73,132 @@ public class Application {
 
     DataFacade dataFacade = new DataFacadeImpl(userService, postService, paymentService, userActivityService);
     FakeDataBase DB =new FakeDataBase(dataFacade);
+    DB.connect();
     try {
         DB.initializeFakeData();
         Scanner scanner = new Scanner(System.in);
+        System.out.println("-------------------------------------------------------------------------------------------");
         System.out.println("! Welcome to our system !");
         System.out.print("Please Enter your username ");
         System.out.println("'Note: You can use any of the following usernames: user0, user1, user2, user3, .... user99'");
-        //FakeDataBase.DB;
         String userName = scanner.nextLine();
         setLoginUserName(userName);
 
        UserData userDataSingleton = UserData.getInstance();
 
-       //objData_Current user
-
-       //userMergeObject = contains all the user data in the system according to his type
         MergeObject userMergeObject = userDataSingleton.getMergeObjectForUser(getLoginUserName(),DB);
            if (userMergeObject != null && userMergeObject.getUserProfile() != null) {
             if (DB.isUserInDatabase(userMergeObject.getUserProfile().getUserName())) {
-                System.out.println("Username " + userMergeObject.getUserProfile().getUserName() + " is found in the database.");
-
+                System.out.println("Welcome to our " +userMergeObject.getUserProfile().getUserType()+" "+userMergeObject.getUserProfile().getUserName() + " !");
             } else {
-                System.out.println("Username " + getLoginUserName() + " is not found in the database.");
-
+                // is not found in the database.
+                System.out.println("Oops"  + getLoginUserName() + ", It seems that you are not registered in our system ");
             }
         } else {
-
             System.out.println("User data could not be retrieved for username: " + getLoginUserName());
-
         }
-
+        ExportFactory exportFactory = new ExportFactory();
+        while (true) {
+            System.out.println("Choose an option:");
+            System.out.println("1 See the names of all users registered in our system");
+            System.out.println("2 Want to see your information in our system ");
+            //Decoreter Pattren
+            System.out.println("3 Want to see all your information in our system in a pdf file ");
+            System.out.println("4 Aggregate your information into a zip file and download it directly to your device ");
+            System.out.println("5 Aggregate your information into a zip file and  uploading the compressed file to your Google Drive ");
+            System.out.println("6 (Hard_Delete)You would like to completely delete your account from the system ");
+            System.out.println("7 (Soft_Delete)You want to delete a specific type of your data");
+            System.out.println("8 Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            try {
+            switch (choice) {
+                case 1:
+                    DB.printAllUserData();
+                    break;
+                case 2:
  if (userMergeObject != null) {
-System.out.println("________________________");
-System.out.println("User Profile Name: " + userMergeObject.getUserProfile().getUserName());
-System.out.println("User LastName: " + userMergeObject.getUserProfile().getLastName());
-System.out.println("User Email: " + userMergeObject.getUserProfile().getEmail());
-System.out.println("User Password: " + userMergeObject.getUserProfile().getPassword());
+System.out.println("Choose the data number you want to display:");
+System.out.println("1. Your profile data");
+System.out.println("2. Your post data");
+System.out.println("3. Your activity data");
+System.out.println("4. Your payment data");
+PrinterFactory factory = new ConcretePrinterFactory();
+Printer data;
+int choiceData = scanner.nextInt();
+try {
+    data = factory.createPrinter(choiceData);
+    data.print(userMergeObject);
+} catch (IllegalArgumentException e) {
+    System.out.println(e.getMessage());
+}
 System.out.println("________________________");
   } else {
         System.out.println("User not found.");
     }
-        try {
-            ExportFactory exportFactory = new ExportFactory();
-            DataExporter exporter = exportFactory.createExport("PDF");
-            exporter.exportData(userMergeObject);
-            DataExporter zip = exportFactory.createExport("ZIP");
-            String zipFileName = zip.exportData(userMergeObject);
-            if (zipFileName != null) {
-                GoogleDriveService googleDriveService = new GoogleDriveService();
-                googleDriveService.uploadFile(zipFileName);
-            } else {
-                System.out.println("Failed to export data.");
-            }
-        }catch (Exception e )
-        {
-            System.out.println(e.getMessage());
-            // e.printStackTrace();
-        }
 
-        // DB.printAllUserData();
+    case 3:
+    
+    try {
+        DataExporter pdfExporter = exportFactory.createExport("PDF");
+        pdfExporter.exportData(userMergeObject);
     } catch (Exception e) {
-
+        System.out.println("Error during PDF export: " + e.getMessage());    }
+    break;
+    case 4:
+    try {
+        DataExporter zipExporter = exportFactory.createExport("ZIP");
+        String zipFileName = zipExporter.exportData(userMergeObject);
+        System.out.println("ZIP file created: " + zipFileName);
+    } catch (Exception e) {
+        System.out.println("An error occurred during ZIP export: " + e.getMessage());
     }
+    break;
 
-        //GoogleDriveService googleDriveService = new GoogleDriveService();
-        //googleDriveService.uploadFile("path/to/your/exported_data.zip");
-//Delete
-/*
+    case 5: 
+                try {
+                  
+                    DataExporter googleDriveExporter = exportFactory.createExport("GoogleDrive");
+                    String driveFileId = googleDriveExporter.exportData(userMergeObject);
+                    System.out.println("Google Drive File ID: " + driveFileId);
+                } catch (Exception e) {
+                 
+                    System.out.println("An error occurred during Google Drive upload: " + e.getMessage());
+                }
+                break;
 
-DB.printAllUserData();
-DeletionActionFactory factory = new DeletionActionFactory(userActivityService,
- paymentService, postService,userService);
- DB.printAllUserData();*/
+                    case 6:
+                    DB.printAllUserData();
 
+
+ DB.printAllUserData();
+                    break;
+                    case 7:
+                    break;
+                    case 8:
+                        System.out.println("Exiting...");
+                     
+                        return;
+                    
+                    default:
+                        System.out.println("Invalid option. Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
+          
+                }
+}
+  
+            
+        } catch (Exception e) {
+            System.out.println("An error occurred during database initialization: " + e.getMessage());
+            e.printStackTrace();
+     
+        } finally {
+            DB.disconnect();
+        
+        }
+    
         //TODO Your application ends here. Do not Change the existing code
         Instant end = Instant.now();
         System.out.println("Application Ended: " + end);

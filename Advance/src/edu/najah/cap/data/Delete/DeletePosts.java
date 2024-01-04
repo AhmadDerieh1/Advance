@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.posts.IPostService;
 import edu.najah.cap.posts.Post;
 
 public class DeletePosts implements Deletion {
-    private static final Logger logger = Logger.getLogger(DeletePosts.class.getName());
+ private static final Logger logger = LoggerSetup.getLogger(); 
     private IPostService postService;
 
     public DeletePosts(IPostService postService) {

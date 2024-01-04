@@ -5,6 +5,7 @@ package edu.najah.cap.data.export;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
@@ -23,12 +24,19 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
+//Decoreter 1
+public class ZipExporter extends DataExporterDecorator{
+    public ZipExporter(DataExporter exporter) {
+        super(exporter);
+      
+    }
 
-public class ZipExporter implements DataExporter {
+
     private Document document;
-    private static final Logger logger = Logger.getLogger(ZipExporter.class.getName());
-
+ private static final Logger logger = LoggerSetup.getLogger(); 
 
 
     @Override
@@ -38,7 +46,11 @@ public class ZipExporter implements DataExporter {
             byte[] pdfContent = null;
             SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy_HHmmss");
             String timestamp = dateFormat.format(new Date());
-            String zipFileName = userName + "_" + timestamp + "_exported_data.zip";
+            String exportedDataPath = wrappedExporter.exportData(user);
+            // String zipFileName = compressToZip(exportedDataPath, user);
+            String zipFileName = userName + "_" + dateFormat.format(new Date()) + "_exported_data.zip";
+            
+           // String zipFileName = userName + "_" + timestamp + "_exported_data.zip";
 
         try {
             // Check if the user exists before exporting data
@@ -50,12 +62,12 @@ public class ZipExporter implements DataExporter {
 
         List<PrintDirectExporter> exporters = strategyCreator.createPrintStrategies();
 
-        try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(userName + "_" + timestamp + "_exported_data.zip"))) {
-
+try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFileName))) {
             for (PrintDirectExporter dataAddedDocument : exporters) {
                     // dataAddedDocument : do add to document
                 pdfContent = createPdf(document, user, dataAddedDocument);
                 String pdfFileName = dataAddedDocument.getDataType();
+                //addFilesToZip(zipOutputStream, exportedDataPath);
                 addPdfToZip(zipOutputStream, pdfFileName + userName.replaceAll("\\s+", "_") + ".pdf", pdfContent);
             }
 
@@ -66,7 +78,6 @@ public class ZipExporter implements DataExporter {
             // Handle exceptions or log them
             logger.log(Level.SEVERE, "Exception in exportData method", e);
         }
-        //To log information about each export in a text file called export_log.txt
         try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("export_log.txt", true)))) {
         out.println("Exported " + timestamp + " for user " + userName);
         } catch (IOException e) {
@@ -111,3 +122,5 @@ public class ZipExporter implements DataExporter {
         zipOutputStream.closeEntry();
     }
 }
+
+

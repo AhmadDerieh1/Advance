@@ -1,11 +1,17 @@
 package edu.najah.cap.data.export;
 
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
+import edu.najah.cap.data.LoggerSetup;
+
+import java.io.IOException;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 public class ExportFactory {
 
-    private static final Logger logger = Logger.getLogger(ExportFactory.class.getName());
+    private static final Logger logger = LoggerSetup.getLogger(); 
 
     public DataExporter createExport(String type) {
         logger.log(Level.INFO, "Creating data exporter of type: " + type);
@@ -15,7 +21,13 @@ public class ExportFactory {
             return new DirectExporter();
         } else if ("ZIP".equals(type)) {
             logger.log(Level.INFO, "ZIP exporter selected");
-            return new ZipExporter();
+            DataExporter wrappedExporter = new DirectExporter();
+            
+          return new ZipExporter(wrappedExporter);
+        } else if ("GoogleDrive".equals(type)) {
+            logger.log(Level.INFO, "Google Drive exporter selected");
+            DataExporter wrappedExporter = new DirectExporter();
+            return new GoogleDriveService(wrappedExporter);
         } else {
             logger.log(Level.SEVERE, "Unsupported export type: " + type);
             throw new IllegalArgumentException("Unsupported export type: " + type);
