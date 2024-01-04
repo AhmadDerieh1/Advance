@@ -63,13 +63,12 @@ public class UserData implements Database {
             return null;
         }
     }
+    //Registering the names of users who have completely deleted their accounts so 
+    //that they cannot create a new account with the same username
     public void deleteUser(String userName) {
-       // FakeDataBase.deleteUser(userName);
         deletedUserNames.add(userName);
     }
-    //print(make new account?)
-//print(enter youre name)
-//input( )
+   //It is not possible to create a new account with the same name in the future
     public boolean canCreateUser(String userName) {
         return !deletedUserNames.contains(userName);
     }

@@ -3,7 +3,12 @@ package edu.najah.cap.data;
 import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.activity.UserActivityService;
+import edu.najah.cap.data.Delete.Deletion;
 import edu.najah.cap.data.Delete.DeletionActionFactory;
+import edu.najah.cap.data.Delete.DeletionType;
+import edu.najah.cap.data.Delete.DeletionTypeFactory;
+import edu.najah.cap.data.Delete.HardDeletion;
+import edu.najah.cap.data.Delete.SoftDeletion;
 import edu.najah.cap.data.export.DataExporter;
 import edu.najah.cap.data.export.ExportFactory;
 import edu.najah.cap.data.export.GoogleDriveService;
@@ -106,9 +111,9 @@ public class Application {
             System.out.println("3 Want to see all your information in our system in a pdf file ");
             System.out.println("4 Aggregate your information into a zip file and download it directly to your device ");
             System.out.println("5 Aggregate your information into a zip file and  uploading the compressed file to your Google Drive ");
-            System.out.println("6 (Hard_Delete)You would like to completely delete your account from the system ");
-            System.out.println("7 (Soft_Delete)You want to delete a specific type of your data");
-            System.out.println("8 Exit");
+            //deletion
+            System.out.println("6 Deletion");
+            System.out.println("7 Exit");
             System.out.print("Enter your choice: ");
             int choice = scanner.nextInt();
             try {
@@ -168,14 +173,49 @@ System.out.println("________________________");
                 break;
 
                     case 6:
-                    DB.printAllUserData();
+                   
+                    System.out.println("Please choose the type of deletion:");
+                    System.out.println("1. Hard Delete (Complete removal of your account)");
+                    System.out.println("2. Soft Delete (You want to delete a specific type of your data)");
+                    System.out.print("Enter your choice: ");
+                    int deletionChoice = scanner.nextInt();
+                    DeletionTypeFactory deletionTypeFactory = new DeletionTypeFactory();
+                    DeletionType deletionType = null;
+                    if (deletionChoice == 1) {
+                        
 
-
- DB.printAllUserData();
-                    break;
+System.out.println("You have chosen to completely delete your account. This action cannot be undone and you will not be able to create a new account with the same username in the future. Are you sure? (yes/no)");
+                    String confirmation = scanner.next();
+                    if ("yes".equalsIgnoreCase(confirmation)) {
+                         //to registering the names of users who have completely deleted
+                        UserData userData = UserData.getInstance();
+                        userData.deleteUser(getLoginUserName());
+                        //delete opration
+                        DeletionType hardDelete = new HardDeletion(); 
+                        hardDelete.executeDeletion(getLoginUserName());
+                       
+                       
+                    }
+                        deletionType = deletionTypeFactory.getType("hard", paymentService, userActivityService, postService, userService);
+                        DB.printAllUserData();
+                         return;
+                    } else if (deletionChoice == 2) {
+                         
+                   deletionType = deletionTypeFactory.getType("soft", paymentService, userActivityService, postService, userService);
+     if (deletionType != null) {
+    System.out.println("Please choose the type of data you want to delete:");
+    System.out.println("1. Delete Posts Data");
+     System.out.println("2. Delete Activities Data");
+    System.out.println("3. Delete Transactions Data");
+    System.out.print("Enter your choice: ");
+    int dataTypeChoice = scanner.nextInt();
+DeletionActionFactory factory = new DeletionActionFactory(userActivityService, paymentService, postService);
+Deletion deletionAction = factory.getAction(dataTypeChoice); 
+deletionAction.removeData(getLoginUserName());
+     }
+break;}
+                
                     case 7:
-                    break;
-                    case 8:
                         System.out.println("Exiting...");
                      
                         return;

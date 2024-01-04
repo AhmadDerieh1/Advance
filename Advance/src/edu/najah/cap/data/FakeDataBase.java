@@ -160,6 +160,12 @@ public static MergeObject UserInDatabase(String userName) {
     }
      System.out.println("-----------------------------");
     }
+    //delete
+public static void deleteUser(String userName) {
+    for (List<MergeObject> mergeObjects : DB.values()) {
+        mergeObjects.removeIf(mergeObject -> mergeObject.getUserProfile().getUserName().equals(userName));
+    }
+}
 
    //Overriding of Database class
      public void connect(){

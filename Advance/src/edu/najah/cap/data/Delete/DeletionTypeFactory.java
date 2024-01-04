@@ -16,9 +16,9 @@ public class DeletionTypeFactory {
                                 IPostService postService, IUserService userService) {
         try {
             if ("hard".equals(deletionType)) {
-                return new HardDeletion(paymentService, userActivityService, postService, userService);
+                return new HardDeletion();
             } else if ("soft".equals(deletionType)) {
-                return new SoftDeletion(paymentService, userActivityService, postService, userService);
+                return new SoftDeletion(paymentService, userActivityService, postService);
             }
             return null;
         } catch (Exception e) {

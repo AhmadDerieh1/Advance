@@ -13,27 +13,25 @@ public class DeletionActionFactory {
     private IUserActivityService userActivityService;
     private IPayment paymentService;
     private IPostService postService;
-    private IUserService userService;
+
 
     public DeletionActionFactory(IUserActivityService userActivityService,
-                                 IPayment paymentService, IPostService postService, IUserService userService) {
+                                 IPayment paymentService, IPostService postService) {
         this.userActivityService = userActivityService;
         this.paymentService = paymentService;
         this.postService = postService;
-        this.userService = userService;
+
     }
 
-    public Deletion getAction(String actionType) {
+    public Deletion getAction(int actionType) {
         try {
             switch (actionType) {
-                case "payment":
+                case 1:
                     return new DeleteTransactions(paymentService);
-                case "activity":
+                case 2:
                     return new DeleteActivities(userActivityService);
-                case "post":
+                case 3:
                     return new DeletePosts(postService);
-                case "userprofile":
-                    return new DeleteUserData(userService);
                 default:
                     return null;
             }
