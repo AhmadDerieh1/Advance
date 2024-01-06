@@ -15,9 +15,12 @@ public class PostPrinter implements Printer {
 
         System.out.println("Your posts data:");
         for (Post post : mergeObject.getPosts()) {
-            System.out.println("Post ID: " + post.getId());
+            System.out.println("___________________________");
             System.out.println("Title: " + post.getTitle());
-            // Optionally log each post detail at a finer logging level
+            System.out.println("Body: " + post.getBody());
+            System.out.println("Author: " + post.getAuthor());
+            System.out.println("Date: " + post.getDate());
+    
             logger.log(Level.FINE, "Printed post: ID=" + post.getId() + ", Title=" + post.getTitle());
         }
 

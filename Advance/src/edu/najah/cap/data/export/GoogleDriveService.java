@@ -10,6 +10,7 @@ import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.api.client.util.Lists;
 
 import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
@@ -28,13 +29,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class GoogleDriveService extends DataExporterDecorator {
-
-    private static final Logger logger = LoggerSetup.getLogger(); 
-
-
-
+    private static final Logger logger = LoggerSetup.getLogger();
     private static final String APPLICATION_NAME = "AdvanceUserDataFeature";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String CREDENTIALS_FILE_PATH = "analog-receiver-396316-eabb5b86e8fd.json"; 
@@ -44,36 +40,40 @@ public class GoogleDriveService extends DataExporterDecorator {
         super(exporter);
     }
     
-  private static GoogleCredentials getCredentials() throws IOException {
+    
+    public static GoogleCredentials getCredentials() throws IOException {
         InputStream in = GoogleDriveService.class.getResourceAsStream("/analog-receiver-396316-eabb5b86e8fd.json");
         if (in == null) {
             throw new FileNotFoundException("Resource not found: /analog-receiver-396316-eabb5b86e8fd.json");
         }
         return GoogleCredentials.fromStream(in).createScoped(SCOPES);
     } 
-    
-    
-    private Drive getDriveService() throws IOException, GeneralSecurityException {
+
+    public Drive getDriveService() throws IOException, GeneralSecurityException {
         GoogleCredentials credential = getCredentials();
         return new Drive.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, new HttpCredentialsAdapter(credential))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
+    
     @Override
-    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
+    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException, IOException {
   
         String exportedFilePath = wrappedExporter.exportData(user);
 
         try {
+            /*java.io.File fileToUpload = new java.io.File(localFilePath);
+            String fileName = fileToUpload.getName();
+            return uploadFileToDrive(fileName, fileToUpload);*/
             return uploadFile(exportedFilePath);
         } catch (IOException | GeneralSecurityException e) {
             logger.log(Level.SEVERE, "An error occurred while uploading to Google Drive", e);
-            throw new RuntimeException("Failed to upload file to Google Drive", e);
+                throw new IOException("Failed to upload file to Google Drive", e);
         }
     }
-
    //uploadFile (): Drive obj  to create a new file on Google Drive.
     public String uploadFile(String filePath) throws IOException, GeneralSecurityException {
+  //public String uploadFileToDrive(String fileName, java.io.File filePath) throws IOException, GeneralSecurityException 
         System.out.println("Enter the function");
         logger.log(Level.INFO, "Starting upload to Google Drive for file: " + filePath);
         File file = null;

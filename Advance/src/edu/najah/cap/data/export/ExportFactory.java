@@ -24,8 +24,8 @@ public class ExportFactory {
           return new ZipExporter(wrappedExporter);
         } else if ("GoogleDrive".equals(type)) {
             logger.log(Level.INFO, "Google Drive exporter selected");
-            DataExporter wrappedExporter = new DirectExporter();
-            return new GoogleDriveService(wrappedExporter);
+            DataExporter zipExporter = new ZipExporter(new DirectExporter());
+            return new GoogleDriveService(zipExporter); 
         } else {
             logger.log(Level.SEVERE, "Unsupported export type: " + type);
             throw new IllegalArgumentException("Unsupported export type: " + type);

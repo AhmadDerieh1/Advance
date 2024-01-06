@@ -1,5 +1,7 @@
 package edu.najah.cap.data.export;
 
+import java.io.IOException;
+
 import edu.najah.cap.data.MergeObject;
 import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
@@ -13,5 +15,7 @@ public abstract class DataExporterDecorator implements DataExporter {
     }
 
     @Override
-    public abstract String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException;
+public abstract String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException, IOException;
+  
+
 }

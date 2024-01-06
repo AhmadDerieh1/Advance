@@ -3,12 +3,10 @@ package edu.najah.cap.data;
 import java.util.Scanner;
 
 import edu.najah.cap.activity.IUserActivityService;
-import edu.najah.cap.data.Delete.Deletion;
-import edu.najah.cap.data.Delete.DeletionActionFactory;
+
 import edu.najah.cap.data.Delete.DeletionType;
 import edu.najah.cap.data.Delete.DeletionTypeFactory;
-import edu.najah.cap.data.Delete.HardDeletion;
-import edu.najah.cap.data.Delete.SoftDeletionOptionsFactory;
+
 import edu.najah.cap.data.export.DataExporter;
 import edu.najah.cap.data.export.ExportFactory;
 import edu.najah.cap.iam.IUserService;
@@ -41,7 +39,7 @@ public class OperationFactory {
             // Decorator Pattern
             System.out.println("3 Want to see all your information in our system in a PDF file ");
             System.out.println("4 Aggregate your information into a zip file and download it directly to your device ");
-            System.out.println("5 Aggregate your information into a zip file and upload the compressed file to your Google Drive ");
+            System.out.println("//5 Aggregate your information into a zip file and upload the compressed file to your Google Drive ");
             // Deletion
             System.out.println("6 Deletion");
             System.out.println("7 Exit");
@@ -55,28 +53,26 @@ public class OperationFactory {
                     DB.printAllUserData();
                         break;
 
-                    case 2:
-                logger.info("2 Want to see your information in our system ");
-                if (userMergeObject != null) {
-                System.out.println("Choose the data number you want to display:");
-                System.out.println("1. Your profile data");
-                System.out.println("2. Your post data");
-                System.out.println("3. Your activity data");
-                System.out.println("4. Your payment data");
-                PrinterFactory factory = new ConcretePrinterFactory();
-                Printer data;
-                int choiceData = scanner.nextInt();
-                try {
-                    data = factory.createPrinter(choiceData);
-                    data.print(userMergeObject);
-                } catch (IllegalArgumentException e) {
-                    System.out.println(e.getMessage());
-                }
-                System.out.println("________________________");
-                } else {
-                        System.out.println("User not found.");
-                    }
-                break;
+                        case 2:
+                        logger.info("2 Want to see your information in our system");
+                        if (userMergeObject != null) {
+                            UserType userType = userMergeObject.getUserProfile().getUserType(); 
+                            DataPrintOptionsFactory printOptionsFactory = new DataPrintOptionsFactory(scanner);
+                            PrinterFactory printerFactory = new ConcretePrinterFactory(); 
+                    
+                            try {
+                                Printer dataPrinter = printOptionsFactory.getPrinter(userType, printerFactory);
+                                if (dataPrinter != null) {
+                                    dataPrinter.print(userMergeObject);
+                                }
+                            } catch (IllegalArgumentException e) {
+                                System.out.println(e.getMessage());
+                            }
+                            System.out.println("________________________");
+                        } else {
+                            System.out.println("User not found.");
+                        }
+                        break;
                 case 3:  
                 logger.info("3 Want to see all your information in our system in a PDF file ");            
                 
@@ -96,7 +92,6 @@ public class OperationFactory {
                     System.out.println("An error occurred during ZIP export: " + e.getMessage());
                 }
                 break;
-
                 case 5: 
                 logger.info("5 Aggregate your information into a zip file and upload the compressed file to your Google Drive ");
                     try {
@@ -110,49 +105,42 @@ public class OperationFactory {
                     }
                     break;
 
-                        case 6:
-                                          logger.info("6 Deletion");
-                    
-                        System.out.println("Please choose the type of deletion:");
-                        System.out.println("1. Hard Delete (Complete removal of your account)");
-                        System.out.println("2. Soft Delete (You want to delete a specific type of your data)");
-                        System.out.print("Enter your choice: ");
-                        int deletionChoice = scanner.nextInt();
-                        DeletionTypeFactory deletionTypeFactory = new DeletionTypeFactory();
-                        DeletionType deletionType = null;
-                        if (deletionChoice == 1) {
-                            
+                    case 6:
+    logger.info("6 Deletion");
+    System.out.println("Please choose the type of deletion:");
+    System.out.println("1. Hard Delete (Complete removal of your account)");
+    System.out.println("2. Soft Delete (You want to delete a specific type of your data)");
+    System.out.print("Enter your choice: ");
+    int deletionChoice = scanner.nextInt();
 
-System.out.println("You have chosen to completely delete your account. This action cannot be undone and you will not be able to create a new account with the same username in the future. Are you sure? (yes/no)");
-                        String confirmation = scanner.next();
-                        if ("yes".equalsIgnoreCase(confirmation)) {
-                            //to registering the names of users who have completely deleted
-                            UserData userData = UserData.getInstance();
-                            userData.deleteUser(userMergeObject.getUserProfile().getUserName());
-                            //delete opration
-                            DeletionType hardDelete = new HardDeletion(); 
-                            hardDelete.executeDeletion(userMergeObject.getUserProfile().getUserName());
-                        
-                        
-                        }
-                            deletionType = deletionTypeFactory.getType("hard", paymentService, userActivityService, postService, userService);
-                            DB.printAllUserData();
-                            return;
-    } else if (deletionChoice == 2) {
-        UserType userType = userMergeObject.getUserProfile().getUserType();
-        SoftDeletionOptionsFactory softDeletionOptionsFactory = new SoftDeletionOptionsFactory(scanner);
-        DeletionActionFactory actionFactory = new DeletionActionFactory(userActivityService, paymentService, postService);
-        Deletion deletionAction = softDeletionOptionsFactory.getSoftDeletionAction(userType, actionFactory);
-
-        if (deletionAction != null) {
-            deletionAction.removeData(userMergeObject.getUserProfile().getUserName(),userMergeObject);
-            logger.info("Soft deletion action performed for user: " + userMergeObject.getUserProfile().getUserName());
-             return;
+    DeletionTypeFactory deletionTypeFactory = new DeletionTypeFactory();
+    DeletionType deletionType = null;
+    String userName = userMergeObject.getUserProfile().getUserName();
+    if (deletionChoice == 1) {
+        System.out.println("You have chosen to completely delete your account. This action cannot be undone.");
+        System.out.print("Are you sure you want to proceed? (yes/no): ");
+        String confirmation = scanner.next();
+        if ("yes".equalsIgnoreCase(confirmation)) {
+            deletionType = deletionTypeFactory.getType("hard", paymentService, userActivityService, postService, userService);
         } else {
-            System.out.println("No action performed. Invalid selection or cancellation.");
+            System.out.println("Hard deletion cancelled by user.");
         }
+    } else if (deletionChoice == 2) {
+                    //new softdeletion 
+        deletionType = deletionTypeFactory.getType("soft", paymentService, userActivityService, postService, userService);
+        //deletionType.executeDeletion(userName);
+
+    } else {
+        System.out.println("Invalid selection. Please enter 1 or 2.");
+    }
+
+    if (deletionType != null) {
+        deletionType.executeDeletion(userName);
+        logger.info("Deletion action performed for user: " + userName);
     }
     break;
+
+                
                         case 7:
                         logger.info("Exiting the application");
                             System.out.println("Exiting...");

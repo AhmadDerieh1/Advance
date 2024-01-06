@@ -16,9 +16,10 @@ public class TransactionPrinter implements Printer {
 
         System.out.println("Your payments data:");
         for (Transaction transaction : mergeObject.getTransactions()) {
-            System.out.println("Transaction ID: " + transaction.getId());
+            System.out.println("___________________________");
             System.out.println("Amount: " + transaction.getAmount());
-            // Optionally log each transaction detail at a finer logging level
+            System.out.println("Description: " + transaction.getDescription());
+
             logger.log(Level.FINE, "Printed transaction: ID=" + transaction.getId() + ", Amount=" + transaction.getAmount());
         }
 

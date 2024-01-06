@@ -6,9 +6,11 @@ import java.util.logging.Logger;
 
 import java.util.logging.Level;
 
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 
 import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
@@ -27,7 +29,15 @@ public class ExportPaymentsToPdf implements PrintDirectExporter {
             logger.log(Level.INFO, "Starting PDF export of payment transactions for user: " + user.getUserProfile().getUserName());
 
             for (Transaction transaction : transactions) {
-                document.add(new Paragraph("Payment Processed: " + transaction.getDescription()));
+            String transactionDetails = "Payment Processed: " +
+            "\nTransaction ID: " + transaction.getId() +
+            "\nUser Name: " + transaction.getUserName() +
+            "\nAmount: " + transaction.getAmount() +
+            "\nDescription: " + transaction.getDescription();
+
+        document.add(new Paragraph(transactionDetails));
+        document.add(Chunk.NEWLINE);
+                    document.add(new LineSeparator());
                 logger.log(Level.FINE, "Added transaction to PDF: " + transaction.getDescription());
             }
 
@@ -39,6 +49,7 @@ public class ExportPaymentsToPdf implements PrintDirectExporter {
 
     @Override
     public String getDataType() {
-        return "Payments_";
+        return "User Payments Data _ ";
     }
+   
 }

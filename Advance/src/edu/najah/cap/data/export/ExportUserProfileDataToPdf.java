@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 
 import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
@@ -30,7 +31,7 @@ public class ExportUserProfileDataToPdf implements PrintDirectExporter {
             document.add(new Paragraph("Last Name: " + userProfile.getLastName()));
             document.add(new Paragraph("Phone number: " + userProfile.getPhoneNumber()));
             document.add(new Paragraph("Email: " + userProfile.getEmail()));
-            document.add(new Paragraph("Password: " + userProfile.getPassword()));  // Note: Exporting passwords is not recommended
+            document.add(new Paragraph("Password: " + userProfile.getPassword())); 
             document.add(new Paragraph("Role: " + userProfile.getRole()));
             document.add(new Paragraph("Department: " + userProfile.getDepartment()));
             document.add(new Paragraph("Organization: " + userProfile.getOrganization()));
@@ -40,6 +41,7 @@ public class ExportUserProfileDataToPdf implements PrintDirectExporter {
             document.add(new Paragraph("Post code: " + userProfile.getPostalCode()));
             document.add(new Paragraph("Building: " + userProfile.getBuilding()));
             document.add(new Paragraph("User type: " + userProfile.getUserType()));
+            
 
             logger.log(Level.INFO, "Completed PDF export of user profile data");
         } catch (DocumentException e) {
@@ -47,8 +49,9 @@ public class ExportUserProfileDataToPdf implements PrintDirectExporter {
         }
     }
 
+//pdf name folder
     @Override
     public String getDataType() {
-        return "userData";
+        return "User Pofile Data _ ";
     }
 }

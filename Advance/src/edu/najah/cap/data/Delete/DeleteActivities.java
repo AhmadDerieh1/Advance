@@ -8,8 +8,6 @@ import edu.najah.cap.activity.IUserActivityService;
 import edu.najah.cap.activity.UserActivity;
 import edu.najah.cap.data.LoggerSetup;
 import edu.najah.cap.data.MergeObject;
-import edu.najah.cap.exceptions.BadRequestException;
-import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 
 public class DeleteActivities implements Deletion {
@@ -18,30 +16,66 @@ public class DeleteActivities implements Deletion {
 
     public DeleteActivities(IUserActivityService userActivityService) {
         this.userActivityService = userActivityService;
+        logger.info("DeleteActivities initialized with IUserActivityService.");
     }
 
-   @Override
+    private boolean tryDeleteActivity(String userName, String activityId) {
+        final int maxRetries = 3; 
+        final long delayMillis = 1000; 
+
+        for (int i = 0; i < maxRetries; i++) {
+            try {
+                userActivityService.removeUserActivity(userName, activityId);
+                logger.info("Activity " + activityId + " deleted for user: " + userName);
+                return true; 
+            } catch (SystemBusyException e) {
+                logger.warning("SystemBusyException encountered. Retrying to delete activity: " + activityId + " for user: " + userName);
+                System.out.println("Waiting...");
+                try {
+                    Thread.sleep(delayMillis);
+                } catch (InterruptedException ie) {
+                    logger.warning("Thread interrupted while waiting to retry deletion of activity: " + activityId);
+                }
+            } catch (Exception e) {
+                logger.warning("Error occurred while trying to delete activity: " + activityId + " for user: " + userName);
+                logger.warning(e.toString());
+                return false;
+            }
+        }
+        logger.warning("Failed to delete activity: " + activityId + " for user: " + userName + " after max retries.");
+        return false; 
+    }
+
+    @Override
     public boolean removeData(String userName, MergeObject mergeObject) {
         boolean isRemovedSuccessfully = false;
         try {
             List<UserActivity> activities = userActivityService.getUserActivity(userName);
-            for (UserActivity activity : new ArrayList<>(activities)) {
-                userActivityService.removeUserActivity(userName, activity.getId());
-                mergeObject.getUserActivities().remove(activity);
+            logger.info("Retrieved activities for user: " + userName + ". Number of activities: " + activities.size());
 
+            for (UserActivity activity : new ArrayList<>(activities)) {
+                if (!tryDeleteActivity(userName, activity.getId())) {
+                    logger.warning("Failed to delete activity: " + activity.getId() + " for user: " + userName);
+                }
             }
-            mergeObject.setUserActivities(new ArrayList<>()); 
-            logger.info("Successfully removed activities for user: " + userName);
-            isRemovedSuccessfully = true;
-        } catch (SystemBusyException | BadRequestException | NotFoundException e) {
-            logger.warning("Exception occurred while removing activities for user: " + userName);
-            logger.warning(e.getMessage());
+
+            activities = userActivityService.getUserActivity(userName);
+            logger.info("Post deletion, remaining activities for user: " + userName + ": " + activities.size());
+
+            mergeObject.setUserActivities(activities);
+
+            if (activities.isEmpty()) {
+                logger.info("All activities successfully deleted for user: " + userName);
+                isRemovedSuccessfully = true;
+            } else {
+                logger.info("Some activities were not deleted for user: " + userName);
+            }
+            System.out.println("Deletion process completed successfully");
         } catch (Exception e) {
-            logger.severe("Unexpected exception occurred while removing activities for user: " + userName);
-            logger.severe(e.getMessage());
+            logger.warning("Error occurred while removing activities for user: " + userName);
+            logger.warning(e.getMessage());
+            logger.warning("Error: " + e.getMessage());
         }
         return isRemovedSuccessfully;
     }
 }
-
-

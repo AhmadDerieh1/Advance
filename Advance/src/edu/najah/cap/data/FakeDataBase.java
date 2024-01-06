@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.io.IOException;
 import java.util.*;
-
 public class FakeDataBase implements Database{
     private static final Logger logger = LoggerSetup.getLogger();
 

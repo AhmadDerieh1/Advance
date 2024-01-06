@@ -36,7 +36,6 @@ public class DeletionActionFactory {
                     return null;
             }
         } catch (Exception e) {
-            // Handle any exceptions that may occur while creating the Deletion object
             logger.warning("Exception occurred while creating Deletion object for action type: " + actionType);
             logger.warning(e.getMessage());
             return null;

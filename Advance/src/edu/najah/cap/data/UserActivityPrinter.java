@@ -14,8 +14,10 @@ public class UserActivityPrinter implements Printer {
 
         System.out.println("Your activity data:");
         for (UserActivity userActivity : mergeObject.getUserActivities()) {
-            System.out.println("Activity ID: " + userActivity.getId());
+            System.out.println("___________________________");
             System.out.println("Activity Type: " + userActivity.getActivityType());
+            System.out.println("Activity Date: " + userActivity.getActivityDate());
+
             logger.log(Level.FINE, "Printed activity: ID=" + userActivity.getId() + ", Type=" + userActivity.getActivityType());
         }
 

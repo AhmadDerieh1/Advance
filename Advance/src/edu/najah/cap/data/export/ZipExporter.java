@@ -11,6 +11,8 @@ import edu.najah.cap.exceptions.BadRequestException;
 import edu.najah.cap.exceptions.NotFoundException;
 import edu.najah.cap.exceptions.SystemBusyException;
 import edu.najah.cap.iam.UserType;
+import java.io.File;
+import java.nio.file.Files;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -28,98 +30,77 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 //Decoreter 1
 public class ZipExporter extends DataExporterDecorator{
+    
+    private static final Logger logger = LoggerSetup.getLogger(); 
+
     public ZipExporter(DataExporter exporter) {
         super(exporter);
-      
     }
-
-
-    private Document document;
- private static final Logger logger = LoggerSetup.getLogger(); 
-
-
     @Override
-    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException {
-            String userName=user.getUserProfile().getUserName();
-            UserType userType=user.getUserProfile().getUserType();
-            byte[] pdfContent = null;
-            SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMyyyy_HHmmss");
-            String timestamp = dateFormat.format(new Date());
-            String exportedDataPath = wrappedExporter.exportData(user);
-            // String zipFileName = compressToZip(exportedDataPath, user);
-            String zipFileName = userName + "_" + dateFormat.format(new Date()) + "_exported_data.zip";
-            
-           // String zipFileName = userName + "_" + timestamp + "_exported_data.zip";
+    public String exportData(MergeObject user) throws SystemBusyException, NotFoundException, BadRequestException, IOException {
+        String result = wrappedExporter.exportData(user);
 
+            String userName = user.getUserProfile().getUserName().replaceAll("\\s+", "_");
+            String zipFilePath = "out/" + userName + "_exported_data.zip"; 
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            boolean zipSuccess = false;
+
+ 
         try {
             // Check if the user exists before exporting data
             if (!userExists(userName)) {
                 throw new NotFoundException("User does not exist: " + userName);
             }
-        PrintStrategyFactory factory = new PrintStrategyFactoryImpl();
-        PrintStrategyCreator strategyCreator = factory.createPrintStrategy(userType);
-
-        List<PrintDirectExporter> exporters = strategyCreator.createPrintStrategies();
-
-try (ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFileName))) {
-            for (PrintDirectExporter dataAddedDocument : exporters) {
-                    // dataAddedDocument : do add to document
-                pdfContent = createPdf(document, user, dataAddedDocument);
-                String pdfFileName = dataAddedDocument.getDataType();
-                //addFilesToZip(zipOutputStream, exportedDataPath);
-                addPdfToZip(zipOutputStream, pdfFileName + userName.replaceAll("\\s+", "_") + ".pdf", pdfContent);
+            
+try (ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFilePath))) {
+            File directory = new File("out");
+            File[] files = directory.listFiles((dir, name) -> name.endsWith(".pdf") && name.contains(userName));
+                 if (files != null) {
+                for (File file : files) {
+                    ZipEntry zipEntry = new ZipEntry(file.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    Files.copy(file.toPath(), zipOut);
+                    zipOut.closeEntry();
+                    file.delete();
+                    //regstration opration in export_log.txt
+                    String logMessage = "PDF file added to ZIP: " + file.getName();
+                    writeToLogFile(logMessage, "export_log.txt");
+                }
+                zipSuccess = true; 
             }
-
-        }catch (IOException e) {
-            logger.log(Level.SEVERE, "IOException in ZipExporter", e);
-            }
-        } catch (SystemBusyException | NotFoundException | BadRequestException e) {
-            // Handle exceptions or log them
-            logger.log(Level.SEVERE, "Exception in exportData method", e);
-        }
-        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("export_log.txt", true)))) {
-        out.println("Exported " + timestamp + " for user " + userName);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "IOException in writing to export_log.txt", e);
+            logger.log(Level.SEVERE, "IOException in ZipExporter", e);
         }
-        return zipFileName;
+        
+        // Only log the creation of the ZIP file if successful
+        if (zipSuccess) {
+            writeToLogFile("ZIP file created: " + zipFilePath, "export_log.txt");
+        }
+    } catch (NotFoundException e) {
+        logger.log(Level.SEVERE, "User not found in exportData method", e);
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Exception in exportData method", e);
     }
+    
+    // Log the result of the export
+    writeToLogFile("Exported " + timestamp + " for user " + userName, "export_log.txt");
 
+    return zipFilePath;
+}
 
-
+    public void writeToLogFile(String message, String filePath) throws IOException {
+        try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filePath, true)))) {
+            out.println(message);
+        }
+    }
+    
     // Add this method to check if the user exists
-    private boolean userExists(String userName) {
+    public boolean userExists(String userName) {
         // Implement logic to check if the user exists in your system
         // Return true if the user exists, false otherwise
         return true; // Replace with actual logic
     }
-    public byte[] createPdf(Document document, MergeObject user, PrintDirectExporter dataAddedDocument) throws SystemBusyException, NotFoundException, BadRequestException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        document = new Document();
 
-        try {
-            PdfWriter.getInstance(document, byteArrayOutputStream);
-            document.open();
-            dataAddedDocument.printPdf(document, user);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Exception in createPdf method", e);
-        } finally {
-            if (document != null && document.isOpen()) {
-                document.close();
-            }
-        }
-
-        return byteArrayOutputStream.toByteArray();
-    }
-
-
-    //zip then compress PDF files
-    private void addPdfToZip(ZipOutputStream zipOutputStream, String entryName, byte[] pdfBytes) throws IOException {
-        ZipEntry zipEntry = new ZipEntry(entryName);
-        zipOutputStream.putNextEntry(zipEntry);
-        zipOutputStream.write(pdfBytes);
-        zipOutputStream.closeEntry();
-    }
 }
 
 
